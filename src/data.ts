@@ -85,7 +85,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
       previousMinistry: 'Ministry of Health',
       newMinistry: 'Treasury Board Secretariat',
       newRole: 'Policy Analyst',
-      startDate: 'July 21, 2026',
+      startDate: '2026-07-21',
       location: "Queen's Park",
       manager: 'Jane Doe',
       laptop: true,
@@ -106,7 +106,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
       previousMinistry: 'Not applicable',
       newMinistry: 'Ministry of Transportation, Digital Services Branch',
       newRole: 'Junior Business Analyst',
-      startDate: 'August 4, 2026',
+      startDate: '2026-08-04',
       location: '777 Bay Street',
       manager: 'Jane Doe',
       laptop: true,
@@ -602,9 +602,16 @@ function ticketArea(t: Ticket): string {
 
 function shortDate(dateStr: string): string {
   if (!dateStr) return 'start date';
-  const parts = dateStr.split(' ');
-  if (parts.length >= 2) return `${parts[0]} ${parts[1].replace(',', '')}`;
-  return dateStr;
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
+export function formatDate(dateStr: string): string {
+  if (!dateStr) return '';
+  const d = new Date(dateStr + 'T00:00:00');
+  if (isNaN(d.getTime())) return dateStr;
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 }
 
 // ============================================================
@@ -641,7 +648,7 @@ export function generateJustification(f: FormState): string {
   const name = f.name || 'The employee';
   const role = f.newRole || 'the role';
   const team = f.newMinistry || 'the new team';
-  const date = f.startDate || 'the start date';
+  const date = f.startDate ? formatDate(f.startDate) : 'the start date';
 
   const accessItems: string[] = [];
   if (f.sharedDrive) accessItems.push(`${teamShort(f)} SharePoint`);

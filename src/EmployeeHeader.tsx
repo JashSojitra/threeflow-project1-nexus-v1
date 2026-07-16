@@ -1,5 +1,6 @@
 import { useNexus } from './store';
 import { MiniScoreRing } from './ui';
+import { formatDate } from './data';
 import { Building2, CalendarClock, MapPin, ChevronRight } from 'lucide-react';
 
 export default function EmployeeHeader() {
@@ -36,7 +37,7 @@ export default function EmployeeHeader() {
             </>
           )}
           {form.newMinistry && <HeaderItem icon={Building2} label="To" value={form.newMinistry} />}
-          {form.startDate && <HeaderItem icon={CalendarClock} label="Start" value={form.startDate} />}
+          {form.startDate && <HeaderItem icon={CalendarClock} label="Start" value={formatDate(form.startDate)} />}
           {form.location && <HeaderItem icon={MapPin} label="At" value={form.location} />}
         </div>
 

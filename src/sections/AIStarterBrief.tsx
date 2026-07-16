@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNexus } from '../store';
 import { Card, SectionTitle, ActionButton, EmptyState } from '../ui';
+import { formatDate } from '../data';
 import {
   FileText,
   Loader2,
@@ -178,7 +179,7 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
                     { icon: User, label: 'Employee', value: form.name || '—' },
                     { icon: Building2, label: 'Team', value: form.newMinistry || '—' },
                     { icon: Briefcase, label: 'Role', value: form.newRole || '—' },
-                    { icon: CalendarClock, label: 'Start', value: form.startDate || '—' },
+                    { icon: CalendarClock, label: 'Start', value: form.startDate ? formatDate(form.startDate) : '—' },
                   ].map((m) => (
                     <div key={m.label} className="bg-white px-5 py-3">
                       <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-slate-400">

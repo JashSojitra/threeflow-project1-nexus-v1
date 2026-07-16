@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNexus } from '../store';
-import { worklogIncludedSections, worklogExcludedItems } from '../data';
+import { worklogIncludedSections, worklogExcludedItems, formatDate } from '../data';
 import { Card, SectionTitle, ActionButton, StatusPill, ApprovalTag, EmptyState } from '../ui';
 import {
   FileDown,
@@ -235,7 +235,7 @@ export default function WorklogExport({ onToast }: { onToast: (msg: string) => v
                       { icon: Building2, label: 'Previous', value: form.previousMinistry || '—' },
                       { icon: Building2, label: 'New ministry', value: form.newMinistry || '—' },
                       { icon: Briefcase, label: 'Role', value: form.newRole || '—' },
-                      { icon: CalendarClock, label: 'Start date', value: form.startDate || '—' },
+                      { icon: CalendarClock, label: 'Start date', value: form.startDate ? formatDate(form.startDate) : '—' },
                       { icon: MapPin, label: 'Location', value: form.location || '—' },
                       { icon: User, label: 'Manager', value: form.manager || '—' },
                       { icon: ArrowRight, label: 'Transition type', value: form.transitionType || '—' },

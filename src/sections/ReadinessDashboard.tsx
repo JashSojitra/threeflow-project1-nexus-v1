@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNexus } from '../store';
 import { Card, SectionTitle, RiskBadge, StatusPill, ScoreRing, ProgressBar, ActionButton, EmptyState } from '../ui';
+import { formatDate } from '../data';
 import {
   Mail,
   Laptop,
@@ -106,7 +107,7 @@ export default function ReadinessDashboard() {
               {readinessScore >= 75 ? 'On track' : readinessScore >= 50 ? 'On track, with blockers' : 'Needs attention'}
             </p>
             <p className="mt-1 text-sm text-slate-500">
-              {blockers} high-risk {blockers === 1 ? 'item' : 'items'} must close before {form.startDate || 'start date'}.
+              {blockers} high-risk {blockers === 1 ? 'item' : 'items'} must close before {form.startDate ? formatDate(form.startDate) : 'start date'}.
             </p>
             <div className="mt-3">
               <ProgressBar value={readinessScore} tone={readinessScore >= 75 ? 'emerald' : readinessScore >= 50 ? 'amber' : 'rose'} />
