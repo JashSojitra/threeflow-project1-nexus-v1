@@ -1,4 +1,5 @@
-import { responsibleAIPoints, ticketJustification, employee } from '../data';
+import { useNexus } from '../store';
+import { responsibleAIPoints, type Ticket } from '../data';
 import { Card, SectionTitle } from '../ui';
 import {
   ShieldCheck,
@@ -33,6 +34,8 @@ const pointIcons = [
 ];
 
 export default function ResponsibleAI() {
+  const { justification, form } = useNexus();
+
   return (
     <div className="animate-fade-in">
       <SectionTitle
@@ -112,12 +115,12 @@ export default function ResponsibleAI() {
             </div>
             <div className="rounded-lg border border-slate-200 bg-slate-50/50 p-3">
               <p className="text-sm leading-relaxed text-slate-700">
-                <span className="font-semibold text-navy-800">Business justification:</span> {ticketJustification}
+                {justification}
               </p>
             </div>
             <div className="mt-3 flex items-center gap-2 text-xs text-slate-400">
               <Sparkles className="h-3.5 w-3.5 text-gold-500" />
-              Auto-generated from intake context for {employee.name}
+              Auto-generated from intake context for {form.name || 'this employee'}
             </div>
           </Card>
 
@@ -158,3 +161,6 @@ export default function ResponsibleAI() {
     </div>
   );
 }
+
+// keep Ticket import used for type-checking in case future expansion needs it
+export type { Ticket };

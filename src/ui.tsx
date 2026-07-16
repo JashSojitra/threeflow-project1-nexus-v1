@@ -1,4 +1,5 @@
 import type { RiskLevel, TicketStatus } from './data';
+import { FileText } from 'lucide-react';
 
 export function RiskBadge({ risk }: { risk: RiskLevel }) {
   const map: Record<RiskLevel, { label: string; cls: string; dot: string }> = {
@@ -203,5 +204,89 @@ export function Toast({ message, show }: { message: string; show: boolean }) {
       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs">✓</span>
       {message}
     </div>
+  );
+}
+
+export function MiniScoreRing({ score, size = 48 }: { score: number; size?: number }) {
+  const stroke = 4;
+  const r = (size - stroke) / 2;
+  const c = 2 * Math.PI * r;
+  const offset = c - (score / 100) * c;
+  const tone = score >= 75 ? '#059669' : score >= 50 ? '#d97706' : '#e11d48';
+  return (
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="-rotate-90">
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke={tone}
+          strokeWidth={stroke}
+          strokeLinecap="round"
+          strokeDasharray={c}
+          strokeDashoffset={offset}
+          className="transition-all duration-700 ease-out"
+        />
+      </svg>
+      <span className="absolute text-sm font-bold text-navy-900">{score}</span>
+    </div>
+  );
+}
+
+export function StepProgress({ steps, activeIndex }: { steps: { label: string }[]; activeIndex: number }) {
+  return (
+    <div className="hidden items-center gap-1 px-6 py-3 md:flex">
+      {steps.map((step, i) => {
+        const isActive = i === activeIndex;
+        const isDone = i < activeIndex;
+        return (
+          <div key={i} className="flex flex-1 items-center last:flex-none">
+            <div className="flex items-center gap-2">
+              <span
+                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
+                  isDone
+                    ? 'bg-navy-700 text-white'
+                    : isActive
+                      ? 'bg-navy-700 text-white ring-4 ring-navy-100'
+                      : 'bg-slate-100 text-slate-400'
+                }`}
+              >
+                {isDone ? '✓' : i + 1}
+              </span>
+              <span
+                className={`text-xs font-medium ${isActive || isDone ? 'text-navy-800' : 'text-slate-400'}`}
+              >
+                {step.label}
+              </span>
+            </div>
+            {i < steps.length - 1 && (
+              <div className={`mx-2 h-0.5 flex-1 rounded ${isDone ? 'bg-navy-600' : 'bg-slate-200'}`} />
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+export function EmptyState({
+  icon: Icon,
+  title,
+  description,
+}: {
+  icon: typeof FileText;
+  title: string;
+  description: string;
+}) {
+  return (
+    <Card className="flex flex-col items-center justify-center py-16 text-center">
+      <span className="mb-4 flex h-14 w-14 items-center justify-center rounded-xl bg-navy-50 text-navy-600">
+        <Icon className="h-6 w-6" />
+      </span>
+      <h3 className="font-serif text-xl font-semibold text-navy-900">{title}</h3>
+      <p className="mt-1.5 max-w-sm text-sm text-slate-500">{description}</p>
+    </Card>
   );
 }

@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { tickets as initialTickets, type Ticket, type TicketStatus } from '../data';
-import { Card, SectionTitle, ActionButton, StatusPill, ApprovalTag } from '../ui';
+import { useNexus } from '../store';
+import { Card, SectionTitle, ActionButton, StatusPill, ApprovalTag, EmptyState } from '../ui';
 import {
   Mail,
   Laptop,
@@ -18,6 +18,8 @@ import {
   Info,
   Package,
   AlertTriangle,
+  FileText,
+  GraduationCap,
 } from 'lucide-react';
 
 const iconMap: Record<string, typeof Mail> = {
@@ -31,34 +33,41 @@ const iconMap: Record<string, typeof Mail> = {
   key: KeyRound,
   printer: Printer,
   trash: Trash2,
+  'file-text': FileText,
+  'graduation-cap': GraduationCap,
 };
 
 export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) => void }) {
-  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const { tickets, submitted, submitBundle, bundleGenerated } = useNexus();
   const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+
+  if (!bundleGenerated) {
+    return (
+      <div className="animate-fade-in">
+        <SectionTitle eyebrow="Step 2" title="Ticket Launchpad" description="" />
+        <EmptyState
+          icon={Package}
+          title="No bundle generated yet"
+          description="Complete the Manager Intake form and click 'Generate Transition Bundle' to create ONRequest ticket drafts."
+        />
+      </div>
+    );
+  }
 
   const draftCount = tickets.filter((t) => t.status === 'draft-ready').length;
   const needsApprovalCount = tickets.filter((t) => t.status === 'needs-approval' || t.status === 'attention').length;
 
-  function openTicket(ticket: Ticket) {
-    onToast(`${ticket.actionLabel} — prototype simulation`);
+  function openTicket(action: string) {
+    onToast(`${action} — prototype simulation`);
   }
 
-  function submitBundle() {
+  function handleSubmit() {
     setSubmitting(true);
     setTimeout(() => {
-      setTickets((prev) =>
-        prev.map((t) => {
-          if (t.status === 'draft-ready') return { ...t, status: 'submitted' as TicketStatus };
-          if (t.status === 'needs-approval') return { ...t, status: 'pending-approval' as TicketStatus };
-          return t;
-        }),
-      );
       setSubmitting(false);
-      setSubmitted(true);
+      submitBundle();
       onToast('Transition bundle submitted in prototype simulation.');
-    }, 1600);
+    }, 1400);
   }
 
   return (
@@ -69,7 +78,6 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
         description="Nexus generated a bundle of ONRequest ticket drafts from the intake. Review approval paths, open individual tickets, and submit the bundle."
       />
 
-      {/* header info bar */}
       <div className="mb-5 flex flex-wrap items-center gap-3">
         <span className="inline-flex items-center gap-1.5 rounded-full bg-navy-50 px-3 py-1 text-xs font-medium text-navy-700">
           <Package className="h-3.5 w-3.5" />
@@ -164,7 +172,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
                     </td>
                     <td className="px-5 py-3.5 text-right">
                       <button
-                        onClick={() => openTicket(t)}
+                        onClick={() => openTicket(t.actionLabel)}
                         className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
                           t.actionType === 'removal'
                             ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
@@ -209,7 +217,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
             <CheckCircle2 className="h-4 w-4" /> Submitted
           </span>
         ) : (
-          <ActionButton onClick={submitBundle} loading={submitting}>
+          <ActionButton onClick={handleSubmit} loading={submitting}>
             <Rocket className="h-4 w-4" />
             Submit Bundle
           </ActionButton>

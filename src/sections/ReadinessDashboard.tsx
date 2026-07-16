@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { dashboardRows, riskScanResults, employee } from '../data';
-import { Card, SectionTitle, RiskBadge, StatusPill, ScoreRing, ProgressBar, ActionButton } from '../ui';
+import { useNexus } from '../store';
+import { Card, SectionTitle, RiskBadge, StatusPill, ScoreRing, ProgressBar, ActionButton, EmptyState } from '../ui';
 import {
   Mail,
   Laptop,
@@ -18,6 +18,12 @@ import {
   Loader2,
   Lightbulb,
   ChevronRight,
+  HardDrive,
+  Folder,
+  MessageSquare,
+  GraduationCap,
+  Package,
+  Trash2,
 } from 'lucide-react';
 
 const iconMap: Record<string, typeof Mail> = {
@@ -28,20 +34,40 @@ const iconMap: Record<string, typeof Mail> = {
   printer: Printer,
   shield: ShieldCheck,
   smartphone: Smartphone,
+  'hard-drive': HardDrive,
+  folder: Folder,
+  'message-square': MessageSquare,
+  'graduation-cap': GraduationCap,
+  trash: Trash2,
 };
 
 export default function ReadinessDashboard() {
+  const { form, tickets, dashboardRows, readinessScore, riskScanResults, bundleGenerated } = useNexus();
   const [scanning, setScanning] = useState(false);
   const [scanDone, setScanDone] = useState(false);
-  const score = 62;
+
+  if (!bundleGenerated) {
+    return (
+      <div className="animate-fade-in">
+        <SectionTitle eyebrow="Step 3" title="Readiness Dashboard" description="" />
+        <EmptyState
+          icon={Package}
+          title="No tickets to track yet"
+          description="Generate a transition bundle from the Manager Intake to see live readiness tracking."
+        />
+      </div>
+    );
+  }
 
   const blockers = dashboardRows.filter((r) => r.risk === 'high').length;
+  const pending = tickets.filter((t) => t.status === 'pending-approval' || t.status === 'needs-approval').length;
+  const securityIssues = dashboardRows.filter((r) => r.risk === 'high' && (r.icon === 'shield' || r.icon === 'trash')).length;
 
   const stats = [
-    { label: 'Tickets generated', value: '11', icon: TrendingUp },
-    { label: 'Pending approvals', value: '3', icon: Clock },
+    { label: 'Tickets generated', value: String(tickets.length), icon: TrendingUp },
+    { label: 'Pending approvals', value: String(pending), icon: Clock },
     { label: 'High-risk blockers', value: String(blockers), icon: AlertTriangle, tone: 'rose' as const },
-    { label: 'Security issues', value: '1', icon: ShieldAlert, tone: 'rose' as const },
+    { label: 'Security actions', value: String(securityIssues), icon: ShieldAlert, tone: 'rose' as const },
   ];
 
   function runScan() {
@@ -53,26 +79,37 @@ export default function ReadinessDashboard() {
     }, 1800);
   }
 
+  // Task status distribution for mini chart
+  const statusBuckets = [
+    { label: 'Draft', count: tickets.filter((t) => t.status === 'draft-ready').length, color: 'bg-sky-200' },
+    { label: 'Submitted', count: tickets.filter((t) => t.status === 'submitted').length, color: 'bg-navy-500' },
+    { label: 'Pending', count: tickets.filter((t) => t.status === 'pending-approval' || t.status === 'needs-approval').length, color: 'bg-amber-400' },
+    { label: 'Attention', count: tickets.filter((t) => t.status === 'attention' || t.status === 'waiting').length, color: 'bg-rose-400' },
+  ];
+  const maxBucket = Math.max(...statusBuckets.map((b) => b.count), 1);
+
   return (
     <div className="animate-fade-in">
       <SectionTitle
         eyebrow="Step 3"
         title="Readiness Dashboard"
-        description="Live tracking of generated tickets, approval status, and AI-flagged risks across Priya's transition to TBS."
+        description={`Live tracking of generated tickets, approval status, and AI-flagged risks for ${form.name || 'this employee'}'s transition.`}
       />
 
       {/* top row: score + stats */}
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
         <Card className="flex items-center gap-6">
-          <ScoreRing score={score} />
+          <ScoreRing score={readinessScore} />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Overall readiness</p>
-            <p className="mt-1 font-serif text-xl font-semibold text-navy-900">On track, with blockers</p>
+            <p className="mt-1 font-serif text-xl font-semibold text-navy-900">
+              {readinessScore >= 75 ? 'On track' : readinessScore >= 50 ? 'On track, with blockers' : 'Needs attention'}
+            </p>
             <p className="mt-1 text-sm text-slate-500">
-              {blockers} high-risk items must close before {employee.startDate}.
+              {blockers} high-risk {blockers === 1 ? 'item' : 'items'} must close before {form.startDate || 'start date'}.
             </p>
             <div className="mt-3">
-              <ProgressBar value={score} tone="amber" />
+              <ProgressBar value={readinessScore} tone={readinessScore >= 75 ? 'emerald' : readinessScore >= 50 ? 'amber' : 'rose'} />
             </div>
           </div>
         </Card>
@@ -96,62 +133,88 @@ export default function ReadinessDashboard() {
         </div>
       </div>
 
-      {/* AI risk scan */}
-      <Card className="mb-6 overflow-hidden">
-        <div className="flex flex-wrap items-center gap-4 border-b border-slate-100 px-5 py-4">
-          <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-700 text-white">
-            <Zap className="h-5 w-5" />
-          </span>
-          <div className="flex-1">
-            <h3 className="font-semibold text-navy-900">AI Risk Scan</h3>
-            <p className="text-sm text-slate-500">
-              Scans all generated tickets and flags blockers before the start date.
+      {/* AI risk scan + task chart */}
+      <div className="mb-6 grid gap-6 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+          <div className="mb-4 flex items-center gap-4">
+            <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-700 text-white">
+              <Zap className="h-5 w-5" />
+            </span>
+            <div className="flex-1">
+              <h3 className="font-semibold text-navy-900">AI Risk Scan</h3>
+              <p className="text-sm text-slate-500">Scans all generated tickets and flags blockers before the start date.</p>
+            </div>
+            <ActionButton onClick={runScan} loading={scanning} disabled={scanDone}>
+              <Zap className="h-4 w-4" />
+              {scanDone ? 'Scan complete' : 'Run AI Risk Scan'}
+            </ActionButton>
+          </div>
+
+          {scanning && (
+            <div className="py-4">
+              <div className="mb-4 flex items-center gap-2 text-sm font-medium text-navy-600">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Scanning {tickets.length} tickets…
+              </div>
+              <div className="space-y-2">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-4 rounded shimmer-bg animate-shimmer" style={{ animationDelay: `${i * 0.2}s` }} />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {scanDone && (
+            <div className="animate-fade-in">
+              <div className="mb-3 flex items-center gap-2">
+                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <h4 className="text-sm font-semibold text-navy-900">AI Risk Scan Complete</h4>
+              </div>
+              <ul className="space-y-2.5">
+                {riskScanResults.map((result, i) => (
+                  <li key={i} className="flex items-start gap-2.5 rounded-lg bg-slate-50/70 p-3 text-sm text-slate-700">
+                    <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
+                    <span>{result}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {!scanning && !scanDone && (
+            <div className="flex flex-col items-center justify-center py-6 text-center">
+              <ShieldCheck className="mb-3 h-10 w-10 text-slate-300" />
+              <p className="text-sm text-slate-400">Run the AI risk scan to surface blockers across all tickets.</p>
+            </div>
+          )}
+        </Card>
+
+        {/* task status chart */}
+        <Card className="lg:col-span-2">
+          <h3 className="mb-4 text-sm font-semibold text-navy-900">Task status distribution</h3>
+          <div className="space-y-3">
+            {statusBuckets.map((b) => (
+              <div key={b.label}>
+                <div className="mb-1 flex justify-between text-xs">
+                  <span className="text-slate-600">{b.label}</span>
+                  <span className="font-semibold text-navy-700">{b.count}</span>
+                </div>
+                <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100">
+                  <div
+                    className={`h-full rounded-full ${b.color} transition-all duration-700`}
+                    style={{ width: `${(b.count / maxBucket) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="mt-4 border-t border-slate-100 pt-3">
+            <p className="text-xs text-slate-400">
+              Score model: Complete 100 · Submitted 70 · In Progress 50 · Pending 35 · Draft 20 · Blocked 0
             </p>
           </div>
-          <ActionButton onClick={runScan} loading={scanning} disabled={scanDone}>
-            <Zap className="h-4 w-4" />
-            {scanDone ? 'Scan complete' : 'Run AI Risk Scan'}
-          </ActionButton>
-        </div>
-
-        {scanning && (
-          <div className="px-5 py-6">
-            <div className="mb-4 flex items-center gap-2 text-sm font-medium text-navy-600">
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Scanning 7 readiness areas…
-            </div>
-            <div className="space-y-2">
-              {[...Array(3)].map((_, i) => (
-                <div key={i} className="h-4 rounded shimmer-bg animate-shimmer" style={{ animationDelay: `${i * 0.2}s` }} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {scanDone && (
-          <div className="animate-fade-in px-5 py-5">
-            <div className="mb-3 flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-emerald-600" />
-              <h4 className="text-sm font-semibold text-navy-900">AI Risk Scan Complete</h4>
-            </div>
-            <ul className="space-y-2.5">
-              {riskScanResults.map((result, i) => (
-                <li key={i} className="flex items-start gap-2.5 rounded-lg bg-slate-50/70 p-3 text-sm text-slate-700">
-                  <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 text-gold-500" />
-                  <span>{result}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
-
-        {!scanning && !scanDone && (
-          <div className="flex flex-col items-center justify-center px-5 py-8 text-center">
-            <ShieldCheck className="mb-3 h-10 w-10 text-slate-300" />
-            <p className="text-sm text-slate-400">Run the AI risk scan to surface blockers across all tickets.</p>
-          </div>
-        )}
-      </Card>
+        </Card>
+      </div>
 
       {/* dashboard table */}
       <Card padded={false} className="overflow-hidden">
