@@ -78,7 +78,7 @@ export interface BriefSection {
 
 export const scenarios: Record<string, { label: string; form: FormState }> = {
   transfer: {
-    label: 'Ministry Transfer Example',
+    label: 'Ministry Change',
     form: {
       name: 'John Doe',
       transitionType: 'Ministry Transfer',
@@ -99,7 +99,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
     },
   },
   newhire: {
-    label: 'New Hire Example',
+    label: 'New Hire',
     form: {
       name: 'Alex Morgan',
       transitionType: 'New Hire',
