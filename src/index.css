@@ -2,71 +2,85 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Central visual tokens. The accessibility preference selects a complete token
+   set, so components and portals inherit the same surface language. */
+:root {
+  color-scheme: light;
+  --app: #f5f6fa; --sidebar: #fbfcff; --header: rgba(255,255,255,.88);
+  --surface: #ffffff; --surface-raised: #ffffff; --surface-subtle: #f7f8fc;
+  --surface-hover: #f1f4fa; --surface-selected: #eef4ff;
+  --text: #172033; --text-secondary: #526179; --text-muted: #71809a; --text-disabled: #96a1b4;
+  --border: #dbe2ec; --border-strong: #c6d1df; --input: #ffffff; --input-border: #bac7d7;
+  --accent: #3867d6; --accent-hover: #2e58bd; --accent-soft: #edf3ff;
+  --success: #17845d; --warning: #a96208; --danger: #c83f4d;
+  --focus: #4c7cf0; --shadow-color: 32 49 76; --overlay: rgba(15, 23, 42, .42);
+}
+
+html[data-contrast='dark'] {
+  color-scheme: dark;
+  --app: #121722; --sidebar: #0e131d; --header: rgba(20, 26, 38, .9);
+  --surface: #1a2130; --surface-raised: #20293a; --surface-subtle: #161d2a;
+  --surface-hover: #273246; --surface-selected: #1d3155;
+  --text: #edf1f7; --text-secondary: #c1cad8; --text-muted: #98a6ba; --text-disabled: #67748a;
+  --border: #303c50; --border-strong: #46536a; --input: #131b28; --input-border: #3c4b62;
+  --accent: #79a7ff; --accent-hover: #9abaff; --accent-soft: #20395f;
+  --success: #51c794; --warning: #f0b45b; --danger: #fb7781;
+  --focus: #8bb4ff; --shadow-color: 0 0 0; --overlay: rgba(0, 0, 0, .64);
+}
+
+html[data-contrast='high'] {
+  color-scheme: light;
+  --app: #fff; --sidebar: #fff; --header: #fff; --surface: #fff; --surface-raised: #fff; --surface-subtle: #f4f4f4;
+  --surface-hover: #e7e7e7; --surface-selected: #e1efff; --text: #000; --text-secondary: #161616; --text-muted: #333; --text-disabled: #555;
+  --border: #111; --border-strong: #000; --input: #fff; --input-border: #000; --accent: #003fc7; --accent-hover: #002c8d; --accent-soft: #e1efff;
+  --success: #006b3c; --warning: #814700; --danger: #b00020; --focus: #003fc7; --shadow-color: 0 0 0; --overlay: rgba(0,0,0,.66);
+}
+
 @layer base {
-  html {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    background: #f5f5f7;
-  }
-  body {
-    @apply m-0 bg-[#f5f5f7] font-sans text-slate-950 antialiased;
-    background-image: radial-gradient(circle at 85% -10%, rgba(99, 102, 241, .10), transparent 32rem), radial-gradient(circle at 10% 15%, rgba(59, 130, 246, .045), transparent 28rem);
-    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
-  }
-  ::selection {
-    @apply bg-blue-100 text-blue-950;
-  }
-  button,
-  input,
-  select,
-  textarea {
-    font: inherit;
-  }
-  button:focus-visible,
-  input:focus-visible,
-  select:focus-visible,
-  textarea:focus-visible {
-    @apply outline-none ring-2 ring-blue-500 ring-offset-2;
-  }
-  * {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd5e1 transparent;
-  }
-  *::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
-  *::-webkit-scrollbar-thumb {
-    background-color: #cbd5e1;
-    border-radius: 9999px;
-  }
+  html { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; background: var(--app); }
+  body { @apply m-0 font-sans antialiased; color: var(--text); background-color: var(--app); background-image: radial-gradient(circle at 84% -10%, color-mix(in srgb, var(--accent) 11%, transparent), transparent 34rem), radial-gradient(circle at 8% 14%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 28rem); font-feature-settings: 'cv02','cv03','cv04','cv11'; }
+  html[data-contrast='dark'] body { background-image: radial-gradient(circle at 76% 0%, rgba(66, 111, 193, .12), transparent 38rem), radial-gradient(circle at 18% 28%, rgba(51, 88, 151, .055), transparent 30rem); }
+  ::selection { background: var(--accent-soft); color: var(--text); }
+  button,input,select,textarea { font: inherit; }
+  input,select,textarea { color: var(--text); background-color: var(--input); border-color: var(--input-border); }
+  ::placeholder { color: var(--text-muted) !important; opacity: 1; }
+  button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; box-shadow: 0 0 0 4px color-mix(in srgb, var(--focus) 24%, transparent); }
+  * { scrollbar-width: thin; scrollbar-color: var(--border-strong) transparent; }
+  *::-webkit-scrollbar { width: 8px; height: 8px; }
+  *::-webkit-scrollbar-thumb { background-color: var(--border-strong); border-radius: 999px; }
 }
 
-html[data-motion='true'] *, html[data-motion='true'] *::before, html[data-motion='true'] *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
-html[data-spacing='true'] body { line-height: 1.7; letter-spacing: .018em; word-spacing: .06em; }
-html[data-underline='true'] a { text-decoration: underline; text-underline-offset: .16em; }
-html[data-focus='true'] :focus-visible { outline: 3px solid #1d4ed8 !important; outline-offset: 3px; box-shadow: 0 0 0 5px rgba(191,219,254,.9); }
-html[data-contrast='high'] body { background-color: #fff; color: #000; }
-html[data-contrast='high'] button, html[data-contrast='high'] input, html[data-contrast='high'] select, html[data-contrast='high'] textarea { border-color: #000 !important; color: #000; }
-html[data-contrast='high'] .text-slate-500, html[data-contrast='high'] .text-slate-400 { color: #1f2937 !important; }
-html[data-contrast='dark'] body, html[data-contrast='dark'] .bg-white { background-color: #111827 !important; color: #f8fafc !important; }
-html[data-contrast='dark'] .text-slate-900, html[data-contrast='dark'] .text-slate-950, html[data-contrast='dark'] .text-navy-900 { color: #f8fafc !important; }
-html[data-contrast='dark'] .text-slate-500, html[data-contrast='dark'] .text-slate-600 { color: #cbd5e1 !important; }
-html[data-contrast='dark'] .border-slate-200, html[data-contrast='dark'] .border-slate-100 { border-color: #475569 !important; }
+/* Compatibility bridge for existing Tailwind utilities. This prevents light-only
+   values from leaking into the dark theme while keeping presentation tokenized. */
+html[data-contrast] .bg-white { background-color: var(--surface) !important; }
+html[data-contrast] .bg-slate-50, html[data-contrast] .bg-slate-50\/70, html[data-contrast] .bg-slate-50\/80, html[data-contrast] .bg-slate-50\/50, html[data-contrast] .bg-slate-100 { background-color: var(--surface-subtle) !important; }
+html[data-contrast] .bg-\[\#f5f5f7\], html[data-contrast] .bg-\[\#fbfbfc\] { background-color: var(--app) !important; }
+html[data-contrast] .text-slate-950, html[data-contrast] .text-slate-900, html[data-contrast] .text-slate-800, html[data-contrast] .text-slate-700, html[data-contrast] .text-navy-900, html[data-contrast] .text-navy-800 { color: var(--text) !important; }
+html[data-contrast] .text-slate-600, html[data-contrast] .text-slate-500 { color: var(--text-secondary) !important; }
+html[data-contrast] .text-slate-400, html[data-contrast] .text-slate-300 { color: var(--text-muted) !important; }
+html[data-contrast] .border-slate-100, html[data-contrast] .border-slate-200, html[data-contrast] .border-slate-200\/70, html[data-contrast] .border-slate-200\/80, html[data-contrast] .border-slate-300 { border-color: var(--border) !important; }
+html[data-contrast] .hover\:bg-slate-50:hover, html[data-contrast] .hover\:bg-slate-50\/70:hover, html[data-contrast] .hover\:bg-slate-100:hover { background-color: var(--surface-hover) !important; }
+html[data-contrast] .hover\:border-slate-300:hover { border-color: var(--border-strong) !important; }
+html[data-contrast] .bg-blue-50, html[data-contrast] .bg-blue-50\/70 { background-color: var(--accent-soft) !important; }
+html[data-contrast] .text-blue-700, html[data-contrast] .text-blue-600 { color: var(--accent) !important; }
+html[data-contrast] .border-blue-600, html[data-contrast] .border-blue-200 { border-color: var(--accent) !important; }
+html[data-contrast] .bg-slate-900, html[data-contrast] .bg-slate-950 { background-color: var(--sidebar) !important; }
+html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { background-color: var(--overlay) !important; }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    scroll-behavior: auto !important;
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+@layer components {
+  .premium-card { border-color: var(--border); background: var(--surface); box-shadow: 0 2px 5px rgb(var(--shadow-color) / .04), 0 12px 28px rgb(var(--shadow-color) / .06); }
+  .premium-interactive { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
+  .premium-interactive:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: 0 5px 12px rgb(var(--shadow-color) / .07), 0 16px 32px rgb(var(--shadow-color) / .1); }
+  .premium-interactive:active:not(:disabled) { transform: translateY(0) scale(.99); }
+  .premium-button { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
+  .premium-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px rgb(var(--shadow-color) / .15); }
+  .premium-button:active:not(:disabled) { transform: translateY(0) scale(.99); }
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-}
+html[data-motion='true'] *,html[data-motion='true'] *::before,html[data-motion='true'] *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
+html[data-spacing='true'] body { line-height:1.7; letter-spacing:.018em; word-spacing:.06em; }
+html[data-underline='true'] a { text-decoration:underline; text-underline-offset:.16em; }
+html[data-focus='true'] :focus-visible { outline:3px solid var(--focus) !important; outline-offset:3px; box-shadow:0 0 0 5px color-mix(in srgb, var(--focus) 30%, transparent); }
+@media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+
+@layer utilities { .text-balance { text-wrap: balance; } }

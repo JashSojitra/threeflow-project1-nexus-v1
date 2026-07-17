@@ -90,7 +90,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
                 className={`rounded-2xl border p-5 text-left transition-colors duration-200 ${
                   isActive
                     ? 'border-blue-200 bg-blue-50/60'
-                    : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/70'
+                    : 'premium-interactive border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/70'
                 }`}
               >
                 <div className="flex items-center justify-between gap-3">

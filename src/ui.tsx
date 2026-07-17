@@ -72,7 +72,7 @@ export function Card({
   padded?: boolean;
 }) {
   return (
-    <div className={`rounded-[20px] border border-slate-200/70 bg-white shadow-card ${padded ? 'p-6 sm:p-7' : ''} ${className}`}>
+    <div className={`premium-card rounded-[20px] border ${padded ? 'p-6 sm:p-7' : ''} ${className}`}>
       {children}
     </div>
   );
@@ -122,7 +122,7 @@ export function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`premium-button inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
     >
       {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />}
       {children}
@@ -135,11 +135,11 @@ export function ScoreRing({ score, size = 120 }: { score: number; size?: number 
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
-  const tone = score >= 75 ? '#059669' : score >= 50 ? '#d97706' : '#e11d48';
+  const tone = score >= 75 ? 'var(--success)' : score >= 50 ? 'var(--warning)' : 'var(--danger)';
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -218,11 +218,11 @@ export function MiniScoreRing({ score, size = 48 }: { score: number; size?: numb
   const r = (size - stroke) / 2;
   const c = 2 * Math.PI * r;
   const offset = c - (score / 100) * c;
-  const tone = score >= 75 ? '#059669' : score >= 50 ? '#d97706' : '#e11d48';
+  const tone = score >= 75 ? 'var(--success)' : score >= 50 ? 'var(--warning)' : 'var(--danger)';
   return (
     <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
       <svg width={size} height={size} className="-rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#e2e8f0" strokeWidth={stroke} />
+        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="var(--border)" strokeWidth={stroke} />
         <circle
           cx={size / 2}
           cy={size / 2}
