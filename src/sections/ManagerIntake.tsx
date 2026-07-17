@@ -52,7 +52,7 @@ const textFields: { key: keyof FormState; label: string; icon: string }[] = [
 ];
 
 export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }) {
-  const { form, updateField, loadDemo, activeScenario, setBundleGenerated, bundleGenerated } = useNexus();
+  const { form, updateField, loadDemo, activeScenario, activeCase, setBundleGenerated, bundleGenerated } = useNexus();
   const { t, locale } = useLocale();
   const isTransfer = form.transitionType === 'Ministry Transfer';
 
@@ -70,6 +70,13 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
         title={t('intake.title')}
         description="One guided intake creates a persistent Transition Case. The form starts empty; optional demo data is available for the presentation."
       />
+
+      {activeScenario === 'transfer' && activeCase?.id === 'NX-DEMO-001' && (
+        <div className="mb-6 flex items-start justify-between gap-4 rounded-xl border border-amber-200 bg-amber-50/60 px-4 py-3 text-sm text-slate-700">
+          <p>{locale === 'fr' ? 'Les données de démonstration sont préremplies aux fins de présentation. En production, les dossiers commenceraient avec des renseignements saisis par le gestionnaire ou provenant d’un système source approuvé.' : 'Demo data is prefilled for presentation purposes. Production cases would begin with manager-entered or approved source-system information.'}</p>
+          <span className="shrink-0 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">{locale === 'fr' ? 'Scénario de démonstration chargé' : 'Demo scenario loaded'}</span>
+        </div>
+      )}
 
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -163,8 +170,8 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
             </div>
 
             <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-6">
-              <button type="button" onClick={() => loadDemo(isTransfer ? 'transfer' : 'newhire')} className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">{locale === 'fr' ? 'Charger les données de démonstration' : 'Load demo data'}</button>
-              {activeScenario && activeScenario !== 'blank' && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">{locale === 'fr' ? 'Données de démonstration chargées' : 'Demo data loaded'}</span>}
+              {!isTransfer && <button type="button" onClick={() => loadDemo('newhire')} className="rounded-xl border border-slate-300 px-4 py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50">{locale === 'fr' ? 'Charger les données de démonstration' : 'Load demo data'}</button>}
+              {activeScenario === 'newhire' && <span className="rounded-full bg-amber-50 px-3 py-1 text-xs font-semibold text-amber-800">{locale === 'fr' ? 'Données de démonstration chargées' : 'Demo data loaded'}</span>}
               <ActionButton onClick={handleGenerate} disabled={!form.name || !form.newRole}>
                 <Package className="h-4 w-4" />
                 {t('form.generate')}
