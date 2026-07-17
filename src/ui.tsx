@@ -1,7 +1,9 @@
 import type { RiskLevel, TicketStatus } from './data';
 import { FileText, X } from 'lucide-react';
+import { useLocale } from './locale';
 
 export function RiskBadge({ risk }: { risk: RiskLevel }) {
+  const { t } = useLocale();
   const map: Record<RiskLevel, { label: string; cls: string; dot: string }> = {
     low: { label: 'Low risk', cls: 'bg-emerald-50 text-emerald-700 border-emerald-200', dot: 'bg-emerald-500' },
     medium: { label: 'At risk', cls: 'bg-amber-50 text-amber-800 border-amber-200', dot: 'bg-amber-500' },
@@ -11,12 +13,13 @@ export function RiskBadge({ risk }: { risk: RiskLevel }) {
   return (
     <span className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-medium ${s.cls}`}>
       <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-      {s.label}
+      {t(`risk.${risk}`)}
     </span>
   );
 }
 
 export function StatusPill({ status }: { status: TicketStatus }) {
+  const { t } = useLocale();
   const map: Record<TicketStatus, { label: string; cls: string }> = {
     'draft-ready': { label: 'Draft ready', cls: 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-200' },
     optional: { label: 'Optional', cls: 'bg-slate-100 text-slate-600' },
@@ -30,7 +33,7 @@ export function StatusPill({ status }: { status: TicketStatus }) {
     complete: { label: 'Complete', cls: 'bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-200' },
   };
   const s = map[status];
-  return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${s.cls}`}>{s.label}</span>;
+  return <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-semibold ${s.cls}`}>{t(`status.${status}`)}</span>;
 }
 
 export function ApprovalTag({ path }: { path: string }) {
@@ -69,7 +72,7 @@ export function Card({
   padded?: boolean;
 }) {
   return (
-    <div className={`rounded-2xl border border-slate-200/90 bg-white shadow-card ${padded ? 'p-5 sm:p-6' : ''} ${className}`}>
+    <div className={`rounded-[20px] border border-slate-200/70 bg-white shadow-card ${padded ? 'p-6 sm:p-7' : ''} ${className}`}>
       {children}
     </div>
   );
@@ -86,8 +89,8 @@ export function SectionTitle({
 }) {
   return (
     <div className="mb-7">
-      {eyebrow && <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-blue-600">{eyebrow}</p>}
-      <h1 className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-[28px]">{title}</h1>
+      {eyebrow && <p className="mb-2 text-xs font-medium text-blue-600">{eyebrow}</p>}
+      <h1 className="text-2xl font-semibold tracking-[-0.03em] text-slate-950 sm:text-[28px]">{title}</h1>
       {description && <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-500">{description}</p>}
     </div>
   );
@@ -110,7 +113,7 @@ export function ActionButton({
 }) {
   const variants = {
     primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm',
-    secondary: 'bg-white text-slate-700 border border-slate-300 hover:bg-slate-50 active:bg-slate-100',
+    secondary: 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 active:bg-slate-100',
     ghost: 'text-slate-600 hover:bg-slate-100 active:bg-slate-200',
     success: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm',
     danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 shadow-sm',
@@ -119,7 +122,7 @@ export function ActionButton({
     <button
       onClick={onClick}
       disabled={disabled || loading}
-      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
+      className={`inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-medium transition-colors duration-200 disabled:cursor-not-allowed disabled:opacity-50 ${variants[variant]} ${className}`}
     >
       {loading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />}
       {children}
@@ -240,32 +243,21 @@ export function MiniScoreRing({ score, size = 48 }: { score: number; size?: numb
 
 export function StepProgress({ steps, activeIndex }: { steps: { label: string }[]; activeIndex: number }) {
   return (
-    <div className="hidden items-center gap-1 px-6 py-3 md:flex">
+    <div className="hidden items-center gap-3 border-t border-slate-100 px-6 py-2.5 md:flex">
       {steps.map((step, i) => {
         const isActive = i === activeIndex;
         const isDone = i < activeIndex;
         return (
           <div key={i} className="flex flex-1 items-center last:flex-none">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center">
               <span
-                className={`flex h-7 w-7 items-center justify-center rounded-full text-xs font-semibold transition-colors ${
-                  isDone
-                    ? 'bg-navy-700 text-white'
-                    : isActive
-                      ? 'bg-navy-700 text-white ring-4 ring-navy-100'
-                      : 'bg-slate-100 text-slate-400'
-                }`}
-              >
-                {isDone ? '✓' : i + 1}
-              </span>
-              <span
-                className={`text-xs font-medium ${isActive || isDone ? 'text-navy-800' : 'text-slate-400'}`}
+                className={`text-xs font-medium ${isActive ? 'text-blue-700' : isDone ? 'text-slate-700' : 'text-slate-400'}`}
               >
                 {step.label}
               </span>
             </div>
             {i < steps.length - 1 && (
-              <div className={`mx-2 h-0.5 flex-1 rounded ${isDone ? 'bg-navy-600' : 'bg-slate-200'}`} />
+              <div className={`mx-3 h-px flex-1 ${isDone ? 'bg-blue-500' : 'bg-slate-200'}`} />
             )}
           </div>
         );

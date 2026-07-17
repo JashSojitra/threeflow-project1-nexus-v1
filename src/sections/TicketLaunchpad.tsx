@@ -83,9 +83,9 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
           <Package className="h-3.5 w-3.5" />
           Generated from role-based onboarding template
         </span>
-        <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-xs font-medium text-amber-700">
+        <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600">
           <Info className="h-3.5 w-3.5" />
-          Prototype simulation: ONRequest integration would be implemented in production
+          ONRequest draft templates
         </span>
       </div>
 
@@ -194,10 +194,10 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
       </Card>
 
       {/* submit bar */}
-      <Card className={`flex flex-wrap items-center gap-4 ${submitted ? 'border-emerald-300 bg-emerald-50/40' : ''}`}>
+      <Card className="flex flex-wrap items-center gap-4">
         <span
           className={`flex h-11 w-11 items-center justify-center rounded-lg ${
-            submitted ? 'bg-emerald-600 text-white' : 'bg-navy-700 text-white'
+            submitted ? 'bg-blue-600 text-white' : 'bg-navy-700 text-white'
           }`}
         >
           {submitted ? <CheckCircle2 className="h-5 w-5" /> : <Rocket className="h-5 w-5" />}
@@ -213,7 +213,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
           </p>
         </div>
         {submitted ? (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100 px-3 py-1.5 text-sm font-semibold text-emerald-700">
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700">
             <CheckCircle2 className="h-4 w-4" /> Submitted
           </span>
         ) : (

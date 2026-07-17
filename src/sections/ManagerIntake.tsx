@@ -1,5 +1,6 @@
 import { useNexus } from '../store';
-import { scenarios, intakeToggles, type FormState, type ScenarioId } from '../data';
+import { useLocale } from '../locale';
+import { intakeToggles, locationOptions, ministryOptions, type FormState, type ScenarioId } from '../data';
 import { Card, SectionTitle, ActionButton, ProgressBar, Toggle } from '../ui';
 import {
   User,
@@ -52,7 +53,8 @@ const textFields: { key: keyof FormState; label: string; icon: string }[] = [
 ];
 
 export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }) {
-  const { form, updateField, loadScenario, setBundleGenerated, bundleGenerated } = useNexus();
+  const { form, updateField, loadScenario, activeScenario, setBundleGenerated, bundleGenerated } = useNexus();
+  const { t } = useLocale();
   const isTransfer = form.transitionType === 'Ministry Transfer';
 
   function handleGenerate() {
@@ -66,7 +68,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
     <div className="animate-fade-in">
       <SectionTitle
         eyebrow="Step 1"
-        title="Manager Intake"
+        title={t('intake.title')}
         description="One guided intake replaces ten separate onboarding requests. Select a scenario or start blank — the form is the single source of truth for every screen."
       />
 
@@ -75,31 +77,30 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
         <div className="p-5 sm:p-6">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-navy-900">
           <Layers className="h-4 w-4 text-navy-600" />
-          Scenario selector
+          {t('intake.scenario')}
         </h3>
         <div className="grid gap-3 sm:grid-cols-3">
           {(['transfer', 'newhire', 'blank'] as ScenarioId[]).map((id) => {
-            const s = scenarios[id!];
-            const isActive =
-              (id === 'transfer' && form.name === 'John Doe') ||
-              (id === 'newhire' && form.name === 'Alex Morgan') ||
-              (id === 'blank' && form.name === '');
+            const isActive = activeScenario === id;
             return (
               <button
                 type="button"
                 key={id}
                 onClick={() => loadScenario(id)}
-                className={`rounded-xl border p-4 text-left transition-colors duration-200 ${
+                className={`rounded-2xl border p-5 text-left transition-colors duration-200 ${
                   isActive
-                    ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500'
-                    : 'border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50'
+                    ? 'border-blue-200 bg-blue-50/60'
+                    : 'border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/70'
                 }`}
               >
-                <p className="text-sm font-semibold text-navy-900">{s.label}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-sm font-semibold text-slate-900">{t(`scenario.${id}`)}</p>
+                  {isActive && <span className="h-2 w-2 rounded-full bg-blue-600" aria-label={t('scenario.selected')} />}
+                </div>
                 <p className="mt-0.5 text-xs text-slate-500">
-                  {id === 'transfer' && 'Ministry transfer with access cleanup'}
-                  {id === 'newhire' && 'New hire with provisioning review'}
-                  {id === 'blank' && 'Clear all fields for custom entry'}
+                  {id === 'transfer' && t('scenario.transferDesc')}
+                  {id === 'newhire' && t('scenario.newhireDesc')}
+                  {id === 'blank' && t('scenario.blankDesc')}
                 </p>
               </button>
             );
@@ -116,7 +117,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
                 <ClipboardList className="h-5 w-5" />
               </span>
               <div>
-                <h3 className="font-semibold text-navy-900">Transition intake form</h3>
+                <h3 className="font-semibold text-navy-900">{t('intake.form')}</h3>
                 <p className="text-sm text-slate-500">
                   {form.manager ? `Submitted by ${form.manager}` : 'Enter manager name'}
                 </p>
@@ -145,6 +146,22 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
                           <option value="">Select transition type</option>
                           <option value="Ministry Transfer">Ministry Transfer</option>
                           <option value="New Hire">New Hire</option>
+                        </select>
+                      ) : f.key === 'newMinistry' ? (
+                        <select
+                          value={form.newMinistry}
+                          onChange={(e) => updateField('newMinistry', e.target.value)}
+                          className="h-10 w-full appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none"
+                        >
+                          {ministryOptions.map((option) => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      ) : f.key === 'location' ? (
+                        <select
+                          value={form.location}
+                          onChange={(e) => updateField('location', e.target.value)}
+                          className="h-10 w-full appearance-none bg-transparent text-sm font-medium text-slate-900 outline-none"
+                        >
+                          {locationOptions.map((option) => <option key={option} value={option}>{option}</option>)}
                         </select>
                       ) : (
                         <input
@@ -185,11 +202,11 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
             <div className="mt-7 flex flex-wrap items-center gap-3 border-t border-slate-100 pt-6">
               <ActionButton onClick={handleGenerate} disabled={!form.name || !form.newRole}>
                 <Package className="h-4 w-4" />
-                Generate Transition Bundle
+                {t('form.generate')}
               </ActionButton>
               {bundleGenerated && (
-                <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700 animate-scale-in">
-                  <Sparkles className="h-3.5 w-3.5" /> Bundle generated
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-xs font-medium text-slate-600 animate-scale-in">
+                  <Sparkles className="h-3.5 w-3.5 text-blue-600" /> Bundle generated
                 </span>
               )}
             </div>
@@ -198,7 +215,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
 
         <div className="space-y-4">
           <Card>
-            <h3 className="mb-3 text-sm font-semibold text-navy-900">Intake completeness</h3>
+            <h3 className="mb-3 text-sm font-semibold text-navy-900">{t('intake.completeness')}</h3>
             <div className="space-y-3">
               {[
                 { label: 'Employee identity', val: form.name && form.transitionType ? 100 : 50 },

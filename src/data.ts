@@ -72,6 +72,15 @@ export interface BriefSection {
   items: { label: string; value: string }[];
 }
 
+export const ministryOptions = ['MPBSDP', 'MOH', 'TBS', 'MOF', 'MAG', 'MTO', 'MNR', 'SOLGEN'] as const;
+export const locationOptions = [
+  '315 Front St, Toronto',
+  '222 Jarvis St, Toronto',
+  '5700 Yonge St, Toronto',
+  '447 McKeown Ave, North Bay',
+  '200 First Ave, North Bay',
+] as const;
+
 // ============================================================
 // Scenarios
 // ============================================================
@@ -80,14 +89,14 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
   transfer: {
     label: 'Ministry Change',
     form: {
-      name: 'John Doe',
+      name: 'Jim Halpert',
       transitionType: 'Ministry Transfer',
       previousMinistry: 'Ministry of Health',
-      newMinistry: 'Treasury Board Secretariat',
+      newMinistry: 'TBS',
       newRole: 'Policy Analyst',
       startDate: '2026-07-21',
-      location: "Queen's Park",
-      manager: 'Jane Doe',
+      location: '222 Jarvis St, Toronto',
+      manager: 'Michael Scott',
       laptop: true,
       sharedDrive: true,
       teams: true,
@@ -101,14 +110,14 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
   newhire: {
     label: 'New Hire',
     form: {
-      name: 'Alex Morgan',
+      name: 'Jim Halpert',
       transitionType: 'New Hire',
       previousMinistry: 'Not applicable',
-      newMinistry: 'Ministry of Transportation, Digital Services Branch',
+      newMinistry: 'MTO',
       newRole: 'Junior Business Analyst',
       startDate: '2026-08-04',
-      location: '777 Bay Street',
-      manager: 'Jane Doe',
+      location: '315 Front St, Toronto',
+      manager: 'Michael Scott',
       laptop: true,
       sharedDrive: true,
       teams: true,
@@ -129,7 +138,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
       newRole: '',
       startDate: '',
       location: '',
-      manager: '',
+      manager: 'Michael Scott',
       laptop: false,
       sharedDrive: false,
       teams: false,
@@ -209,7 +218,7 @@ function teamShort(f: FormState) {
 // Ticket Generator
 // ============================================================
 
-export function generateTickets(f: FormState): Ticket[] {
+export function generateTickets(f: FormState, t?: (key: string, values?: Record<string, string | number>) => string): Ticket[] {
   const tickets: Ticket[] = [];
   const isXfer = isTransfer(f);
 
@@ -343,7 +352,7 @@ export function generateTickets(f: FormState): Ticket[] {
   if (f.building) {
     tickets.push({
       id: 'building',
-      name: 'Building access',
+      name: `Building access${f.location ? ` — ${f.location}` : ''}`,
       category: 'Facilities',
       status: 'draft-ready',
       approvalPath: 'Facilities approval',
@@ -355,7 +364,7 @@ export function generateTickets(f: FormState): Ticket[] {
   if (f.printer) {
     tickets.push({
       id: 'printer',
-      name: 'Printer / FMP setup',
+      name: `Printer / FMP setup${f.location ? ` — ${f.location}` : ''}`,
       category: 'IT',
       status: 'draft-ready',
       approvalPath: 'Standard approval',
@@ -379,7 +388,10 @@ export function generateTickets(f: FormState): Ticket[] {
     });
   }
 
-  return tickets;
+  if (!t) return tickets;
+  const nameKeys: Record<string, string> = { account:'data.account', payroll:isXfer ? 'data.payrollTransfer' : 'data.payrollSetup', training:'data.training', security:'data.security', laptop:'data.laptop', 'shared-drive':'data.drive', sharepoint:'data.sharepoint', teams:'data.teams', 'dist-list':'data.distribution', mobile:'data.mobile', admin:'data.admin', building:'data.building', printer:'data.printer', 'access-removal':'data.removal' };
+  const approvalKeys: Record<string, string> = { 'Standard approval':'data.standardApproval', 'Manager approval':'data.managerApproval', 'IT / security review':'data.securityReview', 'Data owner approval':'data.ownerApproval', 'Facilities approval':'data.facilitiesApproval', 'Cyber / security approval':'data.cyberApproval' };
+  return tickets.map(ticket => ({ ...ticket, name: `${t(nameKeys[ticket.id] ?? ticket.name)}${(ticket.id === 'building' || ticket.id === 'printer') && f.location ? ` — ${f.location}` : ''}`, category: ticket.category === 'Facilities' ? t('data.facilities') : ticket.category, approvalPath: t(approvalKeys[ticket.approvalPath] ?? ticket.approvalPath), actionLabel: ticket.actionType === 'facilities' ? t('data.openFacilities') : ticket.actionType === 'removal' ? t('data.openRemoval') : t('data.openRequest') }));
 }
 
 // ============================================================
@@ -644,11 +656,12 @@ export function calculateReadinessScore(tickets: Ticket[]): number {
 // Business Justification
 // ============================================================
 
-export function generateJustification(f: FormState): string {
+export function generateJustification(f: FormState, t?: (key: string, values?: Record<string, string | number>) => string, dateFormatter: (date: string) => string = formatDate): string {
   const name = f.name || 'The employee';
   const role = f.newRole || 'the role';
   const team = f.newMinistry || 'the new team';
-  const date = f.startDate ? formatDate(f.startDate) : 'the start date';
+  const date = f.startDate ? dateFormatter(f.startDate) : 'the start date';
+  const location = f.location || 'the assigned location';
 
   const accessItems: string[] = [];
   if (f.sharedDrive) accessItems.push(`${teamShort(f)} SharePoint`);
@@ -664,10 +677,12 @@ export function generateJustification(f: FormState): string {
     ? 'briefing note coordination, branch collaboration, and first-week onboarding tasks'
     : 'process analysis, project documentation, and branch collaboration';
 
+  if (t && isNewHire(f)) return t('template.justificationHire', { name, role, team, location, date, access: accessList, purpose });
+  if (t) return t('template.justificationTransfer', { name, role, team, location, date, access: accessList, purpose });
   if (isNewHire(f)) {
-    return `Business justification: ${name} is joining ${team} as a ${role} starting ${date}. Access to ${accessList} is required to support ${purpose}.`;
+    return `Business justification: ${name} is joining ${team} as a ${role} at ${location}, starting ${date}. Access to ${accessList} is required to support ${purpose}.`;
   }
-  return `Business justification: ${name} is transferring into a ${role} role at ${team} starting ${date}. Access to ${accessList} is required to support ${purpose}.`;
+  return `Business justification: ${name} is transferring into a ${role} role at ${team} at ${location}, starting ${date}. Access to ${accessList} is required to support ${purpose}.`;
 }
 
 // ============================================================
@@ -714,7 +729,8 @@ export function generateRiskScanResults(f: FormState, tickets: Ticket[]): string
 // Starter Brief Generator
 // ============================================================
 
-export function generateBriefSections(f: FormState): BriefSection[] {
+export function generateBriefSections(f: FormState, _locale?: unknown): BriefSection[] {
+  void _locale;
   const isXfer = isTransfer(f);
   const name = f.name || 'The employee';
   const role = f.newRole || 'the role';

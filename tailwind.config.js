@@ -4,8 +4,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        serif: ['Inter', '-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        serif: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
       },
       colors: {
         navy: {
@@ -44,10 +44,6 @@ export default {
           '0%': { opacity: '0', transform: 'scale(0.96)' },
           '100%': { opacity: '1', transform: 'scale(1)' },
         },
-        'shimmer': {
-          '0%': { backgroundPosition: '-200% 0' },
-          '100%': { backgroundPosition: '200% 0' },
-        },
         'pulse-ring': {
           '0%, 100%': { opacity: '1' },
           '50%': { opacity: '0.4' },
@@ -57,7 +53,6 @@ export default {
         'fade-in': 'fade-in 0.2s ease-out',
         'slide-in': 'slide-in 0.2s ease-out',
         'scale-in': 'scale-in 0.18s ease-out',
-        'shimmer': 'shimmer 1.5s linear infinite',
         'pulse-ring': 'pulse-ring 2s ease-in-out infinite',
       },
     },

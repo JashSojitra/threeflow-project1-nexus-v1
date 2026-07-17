@@ -151,7 +151,7 @@ export default function ReadinessDashboard() {
               </div>
               <div className="space-y-2">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-4 rounded shimmer-bg animate-shimmer" style={{ animationDelay: `${i * 0.2}s` }} />
+                  <div key={i} className="h-4 rounded bg-slate-100 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
                 ))}
               </div>
             </div>

@@ -194,7 +194,7 @@ export default function WorklogExport({ onToast }: { onToast: (msg: string) => v
               <p className="mt-1.5 text-sm text-slate-500">Compiling session summary for export.</p>
               <div className="mt-5 w-full max-w-sm space-y-2">
                 {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-3 rounded shimmer-bg animate-shimmer" style={{ animationDelay: `${i * 0.2}s` }} />
+                  <div key={i} className="h-3 rounded bg-slate-100 animate-pulse" style={{ animationDelay: `${i * 0.2}s` }} />
                 ))}
               </div>
             </Card>

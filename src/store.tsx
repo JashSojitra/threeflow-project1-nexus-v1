@@ -15,12 +15,14 @@ import {
   generateRiskScanResults,
   calculateReadinessScore,
 } from './data';
+import { formatLocalizedDate, useLocale } from './locale';
 
 interface NexusContextValue {
   form: FormState;
   setForm: (f: FormState) => void;
   updateField: <K extends keyof FormState>(key: K, value: FormState[K]) => void;
   loadScenario: (id: ScenarioId) => void;
+  activeScenario: ScenarioId;
   bundleGenerated: boolean;
   setBundleGenerated: (v: boolean) => void;
   tickets: Ticket[];
@@ -51,7 +53,9 @@ export function useNexus() {
 }
 
 export function NexusProvider({ children }: { children: ReactNode }) {
+  const { locale, t } = useLocale();
   const [form, setFormState] = useState<FormState>(scenarios.transfer.form);
+  const [activeScenario, setActiveScenario] = useState<ScenarioId>('transfer');
   const [bundleGenerated, setBundleGenerated] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [briefGenerated, setBriefGenerated] = useState(false);
@@ -59,6 +63,7 @@ export function NexusProvider({ children }: { children: ReactNode }) {
 
   const setForm = useCallback((f: FormState) => {
     setFormState(f);
+    setActiveScenario(null);
     setBundleGenerated(false);
     setSubmitted(false);
     setBriefGenerated(false);
@@ -69,6 +74,7 @@ export function NexusProvider({ children }: { children: ReactNode }) {
       const next = { ...prev, [key]: value };
       return next;
     });
+    setActiveScenario(null);
     // Changing form invalidates generated bundle
     setBundleGenerated(false);
     setSubmitted(false);
@@ -79,17 +85,18 @@ export function NexusProvider({ children }: { children: ReactNode }) {
     if (id && scenarios[id]) {
       setFormState(scenarios[id].form);
     }
+    setActiveScenario(id);
     setBundleGenerated(false);
     setSubmitted(false);
     setBriefGenerated(false);
     setHandoverNotes('');
   }, []);
 
-  const tickets = useMemo(() => generateTickets(form), [form]);
+  const tickets = useMemo(() => generateTickets(form, t), [form, t]);
   const dashboardRows = useMemo(() => generateDashboardRows(form, tickets), [form, tickets]);
   const accessRows = useMemo(() => generateAccessRows(form), [form]);
-  const briefSections = useMemo(() => generateBriefSections(form), [form]);
-  const justification = useMemo(() => generateJustification(form), [form]);
+  const briefSections = useMemo(() => generateBriefSections(form, locale), [form, locale]);
+  const justification = useMemo(() => generateJustification(form, t, date => formatLocalizedDate(date, locale)), [form, t, locale]);
   const readinessScore = useMemo(() => calculateReadinessScore(tickets), [tickets]);
   const riskScanResults = useMemo(() => generateRiskScanResults(form, tickets), [form, tickets]);
 
@@ -99,6 +106,7 @@ export function NexusProvider({ children }: { children: ReactNode }) {
 
   const resetSession = useCallback(() => {
     setFormState(scenarios.blank.form);
+    setActiveScenario('blank');
     setBundleGenerated(false);
     setSubmitted(false);
     setBriefGenerated(false);
@@ -110,6 +118,7 @@ export function NexusProvider({ children }: { children: ReactNode }) {
     setForm,
     updateField,
     loadScenario,
+    activeScenario,
     bundleGenerated,
     setBundleGenerated,
     tickets: submitted
