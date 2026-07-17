@@ -87,11 +87,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
                 type="button"
                 key={id}
                 onClick={() => loadScenario(id)}
-                className={`rounded-2xl border p-5 text-left transition-colors duration-200 ${
-                  isActive
-                    ? 'border-blue-200 bg-blue-50/60'
-                    : 'premium-interactive border-slate-200/80 bg-white hover:border-slate-300 hover:bg-slate-50/70'
-                }`}
+                className={`scenario-option rounded-2xl p-5 text-left ${isActive ? 'is-selected' : ''}`}
               >
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-sm font-semibold text-slate-900">{t(`scenario.${id}`)}</p>

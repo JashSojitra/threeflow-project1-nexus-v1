@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Accessibility, X, RotateCcw } from 'lucide-react';
 import { useLocale } from './locale';
 
@@ -27,11 +28,20 @@ export default function AccessibilityPanel() {
   const close = () => setOpen(false);
 
   return <>
-    <button ref={trigger} type="button" onClick={() => setOpen(true)} aria-label={t('accessibility')} aria-expanded={open} aria-controls="accessibility-panel" title={t('accessibility')} className="accessibility-trigger">
-      <span className="accessibility-trigger__icon"><Accessibility className="h-5 w-5" aria-hidden="true" /></span>
-      <span className="accessibility-trigger__label">{t('accessibility')}</span>
+    <button
+      ref={trigger}
+      type="button"
+      onClick={() => setOpen(true)}
+      aria-label={t('accessibility')}
+      aria-expanded={open}
+      aria-controls="accessibility-panel"
+      data-label={t('accessibility')}
+      className="accessibility-trigger"
+    >
+      <Accessibility className="accessibility-trigger__glyph" aria-hidden="true" />
+      <span className="sr-only">{t('accessibility')}</span>
     </button>
-    {open && <aside id="accessibility-panel" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="access-title" className="accessibility-panel animate-slide-in">
+    {open && createPortal(<aside id="accessibility-panel" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="access-title" className="accessibility-panel">
       <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] pb-5">
         <div><p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Project Nexus</p><h2 id="access-title" className="mt-1 text-xl font-semibold">{t('accessibility.title')}</h2></div>
         <button type="button" onClick={close} aria-label={t('close')} className="accessibility-icon-button"><X aria-hidden="true" /></button>
@@ -42,8 +52,8 @@ export default function AccessibilityPanel() {
         {([['motion', 'accessibility.motion', 'accessibility.motionDesc'], ['spacing', 'accessibility.spacing', 'accessibility.spacingDesc'], ['underline', 'accessibility.underline', ''], ['focus', 'accessibility.focus', '']] as const).map(([key, label, description]) => <label key={key} className="accessibility-option"><input type="checkbox" checked={prefs[key]} onChange={event => update(key, event.target.checked)} /><span><span className="block text-sm font-semibold">{t(label)}</span>{description && <span className="mt-1 block text-xs text-slate-500">{t(description)}</span>}</span></label>)}
         <div className="flex flex-wrap gap-x-5 gap-y-3 border-t border-[var(--border)] pt-5"><button type="button" onClick={() => setPrefs(defaults)} className="accessibility-text-action"><RotateCcw className="h-4 w-4" />{t('accessibility.reset')}</button><button type="button" onClick={() => setStatement(true)} className="accessibility-text-action">{t('accessibility.statement')}</button></div>
       </div>
-    </aside>}
-    {statement && <div role="dialog" aria-modal="true" aria-labelledby="statement-title" className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4"><div className="animate-scale-in w-full max-w-lg rounded-2xl bg-white p-6 shadow-cardLg"><h2 id="statement-title" className="text-lg font-semibold">{t('accessibility.statementTitle')}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{t('accessibility.statementText')}</p><button type="button" onClick={() => setStatement(false)} className="premium-button mt-5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{t('close')}</button></div></div>}
+    </aside>, document.body)}
+    {statement && createPortal(<div role="dialog" aria-modal="true" aria-labelledby="statement-title" className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4"><div className="accessibility-statement w-full max-w-lg rounded-2xl p-6"><h2 id="statement-title" className="text-lg font-semibold">{t('accessibility.statementTitle')}</h2><p className="mt-3 text-sm leading-6 text-[var(--text-secondary)]">{t('accessibility.statementText')}</p><button type="button" onClick={() => setStatement(false)} className="premium-button mt-5 rounded-lg bg-[var(--accent)] px-4 py-2 text-sm font-semibold text-white">{t('close')}</button></div></div>, document.body)}
   </>;
 }
 
