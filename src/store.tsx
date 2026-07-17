@@ -1,150 +1,27 @@
-import { createContext, useContext, useState, useMemo, useCallback, type ReactNode } from 'react';
-import {
-  type FormState,
-  type Ticket,
-  type DashboardRow,
-  type AccessRow,
-  type BriefSection,
-  type ScenarioId,
-  scenarios,
-  generateTickets,
-  generateDashboardRows,
-  generateAccessRows,
-  generateBriefSections,
-  generateJustification,
-  generateRiskScanResults,
-  calculateReadinessScore,
-} from './data';
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react';
+import { type FormState, type Ticket, type DashboardRow, type AccessRow, type BriefSection, type ScenarioId, scenarios, generateTickets, generateDashboardRows, generateAccessRows, generateBriefSections, generateJustification, generateRiskScanResults, calculateReadinessScore } from './data';
 import { formatLocalizedDate, useLocale } from './locale';
 
-interface NexusContextValue {
-  form: FormState;
-  setForm: (f: FormState) => void;
-  updateField: <K extends keyof FormState>(key: K, value: FormState[K]) => void;
-  loadScenario: (id: ScenarioId) => void;
-  activeScenario: ScenarioId;
-  bundleGenerated: boolean;
-  setBundleGenerated: (v: boolean) => void;
-  tickets: Ticket[];
-  dashboardRows: DashboardRow[];
-  accessRows: AccessRow[];
-  briefSections: BriefSection[];
-  justification: string;
-  readinessScore: number;
-  riskScanResults: string[];
-  submitted: boolean;
-  setSubmitted: (v: boolean) => void;
-  submitBundle: () => void;
-  briefGenerated: boolean;
-  setBriefGenerated: (v: boolean) => void;
-  handoverNotes: string;
-  setHandoverNotes: (v: string) => void;
-  resetSession: () => void;
-}
-
-const NexusContext = createContext<NexusContextValue | null>(null);
-
-// The provider and its hook intentionally share this small state module.
-// eslint-disable-next-line react-refresh/only-export-components
-export function useNexus() {
-  const ctx = useContext(NexusContext);
-  if (!ctx) throw new Error('useNexus must be used within NexusProvider');
-  return ctx;
-}
-
-export function NexusProvider({ children }: { children: ReactNode }) {
-  const { locale, t } = useLocale();
-  const [form, setFormState] = useState<FormState>(scenarios.transfer.form);
-  const [activeScenario, setActiveScenario] = useState<ScenarioId>('transfer');
-  const [bundleGenerated, setBundleGenerated] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
-  const [briefGenerated, setBriefGenerated] = useState(false);
-  const [handoverNotes, setHandoverNotes] = useState('');
-
-  const setForm = useCallback((f: FormState) => {
-    setFormState(f);
-    setActiveScenario(null);
-    setBundleGenerated(false);
-    setSubmitted(false);
-    setBriefGenerated(false);
-  }, []);
-
-  const updateField = useCallback(<K extends keyof FormState>(key: K, value: FormState[K]) => {
-    setFormState((prev) => {
-      const next = { ...prev, [key]: value };
-      return next;
-    });
-    setActiveScenario(null);
-    // Changing form invalidates generated bundle
-    setBundleGenerated(false);
-    setSubmitted(false);
-    setBriefGenerated(false);
-  }, []);
-
-  const loadScenario = useCallback((id: ScenarioId) => {
-    if (id && scenarios[id]) {
-      setFormState(scenarios[id].form);
-    }
-    setActiveScenario(id);
-    setBundleGenerated(false);
-    setSubmitted(false);
-    setBriefGenerated(false);
-    setHandoverNotes('');
-  }, []);
-
-  const tickets = useMemo(() => generateTickets(form, t), [form, t]);
-  const dashboardRows = useMemo(() => generateDashboardRows(form, tickets), [form, tickets]);
-  const accessRows = useMemo(() => generateAccessRows(form), [form]);
-  const briefSections = useMemo(() => generateBriefSections(form, locale), [form, locale]);
-  const justification = useMemo(() => generateJustification(form, t, date => formatLocalizedDate(date, locale)), [form, t, locale]);
-  const readinessScore = useMemo(() => calculateReadinessScore(tickets), [tickets]);
-  const riskScanResults = useMemo(() => generateRiskScanResults(form, tickets), [form, tickets]);
-
-  const submitBundle = useCallback(() => {
-    setSubmitted(true);
-  }, []);
-
-  const resetSession = useCallback(() => {
-    setFormState(scenarios.blank.form);
-    setActiveScenario('blank');
-    setBundleGenerated(false);
-    setSubmitted(false);
-    setBriefGenerated(false);
-    setHandoverNotes('');
-  }, []);
-
-  const value: NexusContextValue = {
-    form,
-    setForm,
-    updateField,
-    loadScenario,
-    activeScenario,
-    bundleGenerated,
-    setBundleGenerated,
-    tickets: submitted
-      ? tickets.map((t) => {
-          if (t.status === 'draft-ready') return { ...t, status: 'submitted' as const };
-          if (t.status === 'needs-approval') return { ...t, status: 'pending-approval' as const };
-          if (t.status === 'waiting') return { ...t, status: 'waiting' as const };
-          if (t.status === 'attention') return { ...t, status: 'attention' as const };
-          return t;
-        })
-      : tickets,
-    dashboardRows,
-    accessRows,
-    briefSections,
-    justification,
-    readinessScore,
-    riskScanResults,
-    submitted,
-    setSubmitted,
-    submitBundle,
-    briefGenerated,
-    setBriefGenerated,
-    handoverNotes,
-    setHandoverNotes,
-    resetSession,
-  };
-
-  return <NexusContext.Provider value={value}>{children}</NexusContext.Provider>;
+export type CaseStatus = 'Active' | 'Waiting' | 'At Risk' | 'Completed';
+export interface TransitionCase { id: string; form: FormState; status: CaseStatus; blocker: string; lastUpdated: string; bundleGenerated: boolean; submitted: boolean; briefGenerated: boolean; }
+const emptyForm = (type: 'Ministry Transfer' | 'New Hire'): FormState => ({ ...scenarios.blank.form, transitionType: type, previousMinistry: type === 'New Hire' ? 'Not applicable' : '', manager: 'Michael Scott' });
+const sampleCases: TransitionCase[] = [
+  { id:'NX-2026-001', form:{...scenarios.transfer.form,name:'Priya Shah',newRole:'Senior Policy Analyst',newMinistry:'TBS',startDate:'2026-08-10'}, status:'Active', blocker:'Old access review', lastUpdated:'2026-07-17', bundleGenerated:true, submitted:true, briefGenerated:true },
+  { id:'NX-2026-002', form:{...scenarios.newhire.form,name:'John Chen',newRole:'Business Analyst',newMinistry:'MTO',startDate:'2026-08-03'}, status:'Waiting', blocker:'Building card', lastUpdated:'2026-07-16', bundleGenerated:true, submitted:true, briefGenerated:false },
+  { id:'NX-2026-003', form:{...scenarios.transfer.form,name:'Emily Wong',newRole:'Program Advisor',newMinistry:'MOF',startDate:'2026-07-28'}, status:'At Risk', blocker:'Payroll form', lastUpdated:'2026-07-17', bundleGenerated:true, submitted:false, briefGenerated:true },
+];
+function savedCases() { try { const stored = localStorage.getItem('nexus-transition-cases'); return stored ? JSON.parse(stored) as TransitionCase[] : []; } catch { return []; } }
+function persist(cases: TransitionCase[]) { localStorage.setItem('nexus-transition-cases', JSON.stringify(cases)); }
+interface NexusContextValue { form: FormState; updateField:<K extends keyof FormState>(key:K,value:FormState[K])=>void; loadDemo:(id:'transfer'|'newhire')=>void; startCase:(type:'Ministry Transfer'|'New Hire')=>void; activeScenario:ScenarioId; activeCase:TransitionCase|null; cases:TransitionCase[]; openCase:(c:TransitionCase)=>void; saveCase:(status?:CaseStatus)=>void; markComplete:()=>void; reassignOwner:()=>void; hasUnsavedChanges:boolean; clearActiveCase:()=>void; resetSession:()=>void; bundleGenerated:boolean; setBundleGenerated:(v:boolean)=>void; tickets:Ticket[]; dashboardRows:DashboardRow[]; accessRows:AccessRow[]; briefSections:BriefSection[]; justification:string; readinessScore:number; riskScanResults:string[]; submitted:boolean; submitBundle:()=>void; briefGenerated:boolean; setBriefGenerated:(v:boolean)=>void; handoverNotes:string; setHandoverNotes:(v:string)=>void; }
+const NexusContext=createContext<NexusContextValue|null>(null);
+export function useNexus(){const c=useContext(NexusContext);if(!c)throw new Error('useNexus must be used within NexusProvider');return c;}
+export function NexusProvider({children}:{children:ReactNode}) { const {locale,t}=useLocale(); const [form,setForm]=useState<FormState>(scenarios.blank.form); const [activeScenario,setActiveScenario]=useState<ScenarioId>('blank'); const [activeCase,setActiveCase]=useState<TransitionCase|null>(null); const [cases,setCases]=useState<TransitionCase[]>(()=>[...sampleCases,...savedCases()]); const [bundleGenerated,setBundleGenerated]=useState(false); const [submitted,setSubmitted]=useState(false); const [briefGenerated,setBriefGenerated]=useState(false); const [handoverNotes,setHandoverNotes]=useState(''); const [dirty,setDirty]=useState(false);
+ const startCase=useCallback((type:'Ministry Transfer'|'New Hire')=>{setForm(emptyForm(type));setActiveScenario('blank');setActiveCase(null);setBundleGenerated(false);setSubmitted(false);setBriefGenerated(false);setHandoverNotes('');setDirty(false);},[]);
+ const loadDemo=useCallback((id:'transfer'|'newhire')=>{setForm(scenarios[id].form);setActiveScenario(id);setDirty(true);},[]);
+ const updateField=useCallback(<K extends keyof FormState>(key:K,value:FormState[K])=>{setForm(p=>({...p,[key]:value}));setActiveScenario(null);setBundleGenerated(false);setSubmitted(false);setBriefGenerated(false);setDirty(true);},[]);
+ const openCase=useCallback((c:TransitionCase)=>{setForm(c.form);setActiveCase(c);setActiveScenario(null);setBundleGenerated(c.bundleGenerated);setSubmitted(c.submitted);setBriefGenerated(c.briefGenerated);setHandoverNotes('');setDirty(false);},[]);
+ const saveCase=useCallback((status?:CaseStatus)=>{const existing=activeCase; const c:TransitionCase={id:existing?.id??`NX-2026-${String(cases.filter(x=>x.id.startsWith('NX-2026')).length+1).padStart(3,'0')}`,form,status:status??existing?.status??'Active',blocker:existing?.blocker??(form.transitionType==='Ministry Transfer'?'Old access review':'Building card'),lastUpdated:'2026-07-17',bundleGenerated,submitted,briefGenerated}; const next=[c,...cases.filter(x=>x.id!==c.id)];setCases(next);persist(next.filter(x=>!sampleCases.some(s=>s.id===x.id)));setActiveCase(c);setDirty(false);setHandoverNotes('');},[activeCase,cases,form,bundleGenerated,submitted,briefGenerated]);
+ const markComplete=useCallback(()=>saveCase('Completed'),[saveCase]); const reassignOwner=useCallback(()=>{updateField('manager','Dwight Schrute');},[updateField]); const clearActiveCase=useCallback(()=>{setActiveCase(null);setForm(scenarios.blank.form);setBundleGenerated(false);setSubmitted(false);setBriefGenerated(false);setHandoverNotes('');setDirty(false);},[]);
+ const tickets=useMemo(()=>generateTickets(form,t),[form,t]); const visibleTickets=submitted?tickets.map(x=>x.status==='draft-ready'?{...x,status:'submitted' as const}:x):tickets; const dashboardRows=useMemo(()=>generateDashboardRows(form,visibleTickets),[form,visibleTickets]);
+ return <NexusContext.Provider value={{form,updateField,loadDemo,startCase,activeScenario,activeCase,cases,openCase,saveCase,markComplete,reassignOwner,hasUnsavedChanges:dirty,clearActiveCase,resetSession:clearActiveCase,bundleGenerated,setBundleGenerated,tickets:visibleTickets,dashboardRows,accessRows:generateAccessRows(form),briefSections:generateBriefSections(form,locale),justification:generateJustification(form,t,d=>formatLocalizedDate(d,locale)),readinessScore:calculateReadinessScore(visibleTickets),riskScanResults:generateRiskScanResults(form,visibleTickets),submitted,submitBundle:()=>{setSubmitted(true);setDirty(true)},briefGenerated,setBriefGenerated:(v)=>{setBriefGenerated(v);setDirty(true)},handoverNotes,setHandoverNotes}}>{children}</NexusContext.Provider>;
 }
