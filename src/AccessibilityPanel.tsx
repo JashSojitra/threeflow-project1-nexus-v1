@@ -1,7 +1,50 @@
 import { useEffect, useRef, useState } from 'react';
 import { Accessibility, X, RotateCcw } from 'lucide-react';
 import { useLocale } from './locale';
-type Prefs={size:string;contrast:string;motion:boolean;spacing:boolean;underline:boolean;focus:boolean};
-const defaults:Prefs={size:'100',contrast:'default',motion:false,spacing:false,underline:false,focus:false};
-export default function AccessibilityPanel(){const {t}=useLocale();const [open,setOpen]=useState(false);const [statement,setStatement]=useState(false);const [prefs,setPrefs]=useState<Prefs>(()=>{try{return {...defaults,...JSON.parse(localStorage.getItem('nexus-accessibility')||'{}')}}catch{return defaults}});const trigger=useRef<HTMLButtonElement>(null);const panel=useRef<HTMLElement>(null);useEffect(()=>{localStorage.setItem('nexus-accessibility',JSON.stringify(prefs));const root=document.documentElement;root.dataset.contrast=prefs.contrast;root.dataset.theme=prefs.contrast;root.dataset.motion=String(prefs.motion);root.dataset.spacing=String(prefs.spacing);root.dataset.underline=String(prefs.underline);root.dataset.focus=String(prefs.focus);root.style.fontSize=`${prefs.size}%`},[prefs]);useEffect(()=>{if(open) panel.current?.focus(); else trigger.current?.focus()},[open]);useEffect(()=>{const f=(e:KeyboardEvent)=>{if(e.key==='Escape'){setOpen(false);setStatement(false)}};window.addEventListener('keydown',f);return()=>window.removeEventListener('keydown',f)},[]);const update=<K extends keyof Prefs>(key:K,value:Prefs[K])=>setPrefs(p=>({...p,[key]:value}));return <><button ref={trigger} onClick={()=>setOpen(true)} aria-label={t('accessibility')} title={t('accessibility')} className="premium-button fixed bottom-5 right-5 z-50 inline-flex min-h-12 items-center gap-2 rounded-full bg-slate-950 px-4 text-sm font-semibold text-white shadow-cardLg"><Accessibility className="h-5 w-5" aria-hidden="true"/><span className="hidden sm:inline">{t('accessibility')}</span></button>{open&&<aside ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="access-title" className="animate-slide-in fixed inset-y-0 right-0 z-[70] w-full max-w-md overflow-y-auto border-l border-slate-200 bg-white p-6 shadow-2xl"><div className="flex items-start justify-between gap-4"><div><p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Project Nexus</p><h2 id="access-title" className="mt-1 text-xl font-semibold">{t('accessibility.title')}</h2></div><button onClick={()=>setOpen(false)} aria-label={t('close')} className="premium-button rounded-lg p-2 hover:bg-slate-100"><X aria-hidden="true"/></button></div><div className="mt-7 space-y-6"><Field label={t('accessibility.textSize')}><div className="grid grid-cols-4 gap-2">{['100','125','150','200'].map(x=><button key={x} aria-pressed={prefs.size===x} onClick={()=>update('size',x)} className={`premium-button rounded-lg border px-2 py-2 text-sm ${prefs.size===x?'border-blue-600 bg-blue-50 text-blue-800':'border-slate-200'}`}>{x}%</button>)}</div></Field><Field label={t('accessibility.contrast')}><select value={prefs.contrast} onChange={e=>update('contrast',e.target.value)} className="w-full rounded-lg border border-slate-300 bg-white p-2"><option value="default">{t('accessibility.default')}</option><option value="high">{t('accessibility.high')}</option><option value="dark">{t('accessibility.dark')}</option></select></Field>{([['motion','accessibility.motion','accessibility.motionDesc'],['spacing','accessibility.spacing','accessibility.spacingDesc'],['underline','accessibility.underline',''],['focus','accessibility.focus','']] as const).map(([key,label,desc])=><label key={key} className="flex cursor-pointer gap-3 rounded-xl border border-slate-200 p-3 transition-colors hover:bg-slate-50"><input type="checkbox" checked={prefs[key]} onChange={e=>update(key,e.target.checked)}/><span><span className="block text-sm font-semibold">{t(label)}</span>{desc&&<span className="mt-1 block text-xs text-slate-500">{t(desc)}</span>}</span></label>)}<button onClick={()=>setPrefs(defaults)} className="premium-button inline-flex items-center gap-2 text-sm font-semibold text-blue-700 hover:underline"><RotateCcw className="h-4 w-4"/>{t('accessibility.reset')}</button><button onClick={()=>setStatement(true)} className="premium-button block text-sm text-blue-700 underline">{t('accessibility.statement')}</button></div></aside>}{statement&&<div role="dialog" aria-modal="true" aria-labelledby="statement-title" className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4"><div className="animate-scale-in w-full max-w-lg rounded-2xl bg-white p-6 shadow-cardLg"><h2 id="statement-title" className="text-lg font-semibold">{t('accessibility.statementTitle')}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{t('accessibility.statementText')}</p><button onClick={()=>setStatement(false)} className="premium-button mt-5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{t('close')}</button></div></div>}</>}
-function Field({label,children}:{label:string;children:React.ReactNode}){return <div><label className="mb-2 block text-sm font-semibold">{label}</label>{children}</div>}
+
+type Prefs = { size: string; contrast: string; motion: boolean; spacing: boolean; underline: boolean; focus: boolean };
+const defaults: Prefs = { size: '100', contrast: 'default', motion: false, spacing: false, underline: false, focus: false };
+
+export default function AccessibilityPanel() {
+  const { t } = useLocale();
+  const [open, setOpen] = useState(false);
+  const [statement, setStatement] = useState(false);
+  const [prefs, setPrefs] = useState<Prefs>(() => { try { return { ...defaults, ...JSON.parse(localStorage.getItem('nexus-accessibility') || '{}') }; } catch { return defaults; } });
+  const trigger = useRef<HTMLButtonElement>(null);
+  const panel = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    localStorage.setItem('nexus-accessibility', JSON.stringify(prefs));
+    const root = document.documentElement;
+    root.dataset.contrast = prefs.contrast; root.dataset.theme = prefs.contrast; root.dataset.motion = String(prefs.motion);
+    root.dataset.spacing = String(prefs.spacing); root.dataset.underline = String(prefs.underline); root.dataset.focus = String(prefs.focus);
+    root.style.fontSize = `${prefs.size}%`;
+  }, [prefs]);
+  useEffect(() => { if (open) panel.current?.focus(); else trigger.current?.focus(); }, [open]);
+  useEffect(() => { const onKey = (event: KeyboardEvent) => { if (event.key === 'Escape') { setOpen(false); setStatement(false); } }; window.addEventListener('keydown', onKey); return () => window.removeEventListener('keydown', onKey); }, []);
+
+  const update = <K extends keyof Prefs>(key: K, value: Prefs[K]) => setPrefs(current => ({ ...current, [key]: value }));
+  const close = () => setOpen(false);
+
+  return <>
+    <button ref={trigger} type="button" onClick={() => setOpen(true)} aria-label={t('accessibility')} aria-expanded={open} aria-controls="accessibility-panel" title={t('accessibility')} className="accessibility-trigger">
+      <span className="accessibility-trigger__icon"><Accessibility className="h-5 w-5" aria-hidden="true" /></span>
+      <span className="accessibility-trigger__label">{t('accessibility')}</span>
+    </button>
+    {open && <aside id="accessibility-panel" ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="access-title" className="accessibility-panel animate-slide-in">
+      <div className="flex items-start justify-between gap-4 border-b border-[var(--border)] pb-5">
+        <div><p className="text-xs font-semibold uppercase tracking-wider text-blue-700">Project Nexus</p><h2 id="access-title" className="mt-1 text-xl font-semibold">{t('accessibility.title')}</h2></div>
+        <button type="button" onClick={close} aria-label={t('close')} className="accessibility-icon-button"><X aria-hidden="true" /></button>
+      </div>
+      <div className="mt-6 space-y-6">
+        <Field label={t('accessibility.textSize')}><div className="grid grid-cols-4 gap-2">{['100', '125', '150', '200'].map(size => <button key={size} type="button" aria-pressed={prefs.size === size} onClick={() => update('size', size)} className={`accessibility-choice ${prefs.size === size ? 'is-selected' : ''}`}>{size}%</button>)}</div></Field>
+        <Field label={t('accessibility.contrast')}><select value={prefs.contrast} onChange={event => update('contrast', event.target.value)} className="accessibility-select"><option value="default">{t('accessibility.default')}</option><option value="high">{t('accessibility.high')}</option><option value="dark">{t('accessibility.dark')}</option></select></Field>
+        {([['motion', 'accessibility.motion', 'accessibility.motionDesc'], ['spacing', 'accessibility.spacing', 'accessibility.spacingDesc'], ['underline', 'accessibility.underline', ''], ['focus', 'accessibility.focus', '']] as const).map(([key, label, description]) => <label key={key} className="accessibility-option"><input type="checkbox" checked={prefs[key]} onChange={event => update(key, event.target.checked)} /><span><span className="block text-sm font-semibold">{t(label)}</span>{description && <span className="mt-1 block text-xs text-slate-500">{t(description)}</span>}</span></label>)}
+        <div className="flex flex-wrap gap-x-5 gap-y-3 border-t border-[var(--border)] pt-5"><button type="button" onClick={() => setPrefs(defaults)} className="accessibility-text-action"><RotateCcw className="h-4 w-4" />{t('accessibility.reset')}</button><button type="button" onClick={() => setStatement(true)} className="accessibility-text-action">{t('accessibility.statement')}</button></div>
+      </div>
+    </aside>}
+    {statement && <div role="dialog" aria-modal="true" aria-labelledby="statement-title" className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/40 p-4"><div className="animate-scale-in w-full max-w-lg rounded-2xl bg-white p-6 shadow-cardLg"><h2 id="statement-title" className="text-lg font-semibold">{t('accessibility.statementTitle')}</h2><p className="mt-3 text-sm leading-6 text-slate-600">{t('accessibility.statementText')}</p><button type="button" onClick={() => setStatement(false)} className="premium-button mt-5 rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white">{t('close')}</button></div></div>}
+  </>;
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) { return <div><label className="mb-2 block text-sm font-semibold">{label}</label>{children}</div>; }

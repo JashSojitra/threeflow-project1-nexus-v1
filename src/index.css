@@ -75,6 +75,24 @@ html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { b
   .premium-button { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
   .premium-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px rgb(var(--shadow-color) / .15); }
   .premium-button:active:not(:disabled) { transform: translateY(0) scale(.99); }
+  .accessibility-trigger { position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 50; display: inline-flex; min-height: 3.25rem; min-width: 11.5rem; max-width: calc(100vw - 2rem); align-items: center; justify-content: center; gap: .625rem; overflow: visible; border: 1px solid var(--border-strong); border-radius: 1rem; padding: .625rem .875rem; color: var(--text); background: var(--surface-raised); box-shadow: 0 10px 26px rgb(var(--shadow-color) / .18), 0 2px 6px rgb(var(--shadow-color) / .1); font-size: .875rem; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
+  .accessibility-trigger:hover { transform: translateY(-1px); border-color: var(--accent); background: var(--surface-hover); box-shadow: 0 14px 30px rgb(var(--shadow-color) / .2), 0 3px 8px rgb(var(--shadow-color) / .12); }
+  .accessibility-trigger:active { transform: translateY(0) scale(.99); }
+  .accessibility-trigger:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; box-shadow: 0 0 0 5px color-mix(in srgb, var(--focus) 28%, transparent), 0 10px 26px rgb(var(--shadow-color) / .18); }
+  .accessibility-trigger__icon { display: grid; flex: 0 0 auto; width: 1.85rem; height: 1.85rem; place-items: center; border-radius: .7rem; color: white; background: var(--accent); }
+  .accessibility-trigger__label { min-width: 0; overflow-wrap: anywhere; text-align: left; }
+  .accessibility-panel { position: fixed; inset-block: 0; right: 0; z-index: 70; width: min(100%, 27rem); overflow-y: auto; border-left: 1px solid var(--border); padding: 1.5rem; color: var(--text); background: var(--surface-raised); box-shadow: -18px 0 45px rgb(var(--shadow-color) / .18); }
+  .accessibility-icon-button { display: inline-grid; width: 2.5rem; height: 2.5rem; flex: 0 0 auto; place-items: center; border: 1px solid var(--border); border-radius: .75rem; color: var(--text-secondary); background: var(--surface-subtle); transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease; }
+  .accessibility-icon-button:hover { color: var(--text); border-color: var(--border-strong); background: var(--surface-hover); }
+  .accessibility-choice { min-height: 2.5rem; border: 1px solid var(--border); border-radius: .65rem; color: var(--text-secondary); background: var(--surface-subtle); font-size: .875rem; font-weight: 700; transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease; }
+  .accessibility-choice:hover { border-color: var(--border-strong); background: var(--surface-hover); }
+  .accessibility-choice.is-selected { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+  .accessibility-select { width: 100%; min-height: 2.75rem; border: 1px solid var(--input-border); border-radius: .7rem; padding: .5rem .75rem; color: var(--text); background: var(--input); }
+  .accessibility-option { display: flex; gap: .75rem; border: 1px solid var(--border); border-radius: .85rem; padding: .875rem; color: var(--text); background: var(--surface-subtle); transition: border-color 160ms ease, background-color 160ms ease; }
+  .accessibility-option:hover { border-color: var(--border-strong); background: var(--surface-hover); }
+  .accessibility-option input { width: 1rem; height: 1rem; margin-top: .15rem; accent-color: var(--accent); }
+  .accessibility-text-action { display: inline-flex; align-items: center; gap: .45rem; color: var(--accent); font-size: .875rem; font-weight: 700; text-decoration: underline; text-underline-offset: .16em; }
+  @media (max-width: 420px) { .accessibility-trigger { left: 1rem; right: 1rem; min-width: 0; width: auto; } .accessibility-trigger__label { text-align: center; } .accessibility-panel { width: 100%; padding: 1.25rem; } }
 }
 
 html[data-motion='true'] *,html[data-motion='true'] *::before,html[data-motion='true'] *::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; scroll-behavior:auto !important; }
