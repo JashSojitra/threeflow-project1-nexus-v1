@@ -91,7 +91,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
 
       {/* summary cards */}
       <div className="mb-6 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <Card className="flex items-center gap-3 py-4">
+        <Card className="summary-card flex items-center gap-3 py-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-50 text-navy-700">
             <Package className="h-5 w-5" />
           </span>
@@ -100,7 +100,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
             <p className="text-xs font-medium text-slate-500">Tickets generated</p>
           </div>
         </Card>
-        <Card className="flex items-center gap-3 py-4">
+        <Card className="summary-card flex items-center gap-3 py-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-sky-50 text-sky-700">
             <CheckCircle2 className="h-5 w-5" />
           </span>
@@ -109,7 +109,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
             <p className="text-xs font-medium text-slate-500">Draft ready</p>
           </div>
         </Card>
-        <Card className="flex items-center gap-3 py-4">
+        <Card className="summary-card flex items-center gap-3 py-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-amber-50 text-amber-700">
             <AlertTriangle className="h-5 w-5" />
           </span>
@@ -118,7 +118,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
             <p className="text-xs font-medium text-slate-500">Need approval</p>
           </div>
         </Card>
-        <Card className="flex items-center gap-3 py-4">
+        <Card className="summary-card flex items-center gap-3 py-4">
           <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-50 text-emerald-700">
             <Rocket className="h-5 w-5" />
           </span>
@@ -173,7 +173,7 @@ export default function TicketLaunchpad({ onToast }: { onToast: (msg: string) =>
                     <td className="px-5 py-3.5 text-right">
                       <button
                         onClick={() => openTicket(t.actionLabel)}
-                        className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${
+                        className={`premium-button inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold ${
                           t.actionType === 'removal'
                             ? 'bg-rose-50 text-rose-700 hover:bg-rose-100'
                             : t.actionType === 'facilities'

@@ -66,13 +66,15 @@ export function Card({
   children,
   className = '',
   padded = true,
+  interactive = false,
 }: {
   children: React.ReactNode;
   className?: string;
   padded?: boolean;
+  interactive?: boolean;
 }) {
   return (
-    <div className={`premium-card rounded-[20px] border ${padded ? 'p-6 sm:p-7' : ''} ${className}`}>
+    <div className={`premium-card rounded-[20px] border ${interactive ? 'premium-interactive' : ''} ${padded ? 'p-6 sm:p-7' : ''} ${className}`}>
       {children}
     </div>
   );

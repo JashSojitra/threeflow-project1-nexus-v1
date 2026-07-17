@@ -68,13 +68,25 @@ html[data-contrast] .bg-slate-900, html[data-contrast] .bg-slate-950 { backgroun
 html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { background-color: var(--overlay) !important; }
 
 @layer components {
-  .premium-card { border-color: var(--border); background: var(--surface); box-shadow: 0 2px 5px rgb(var(--shadow-color) / .04), 0 12px 28px rgb(var(--shadow-color) / .06); }
+  .premium-card { position: relative; border-color: color-mix(in srgb, var(--border) 88%, var(--surface)); background: linear-gradient(145deg, color-mix(in srgb, var(--surface-raised) 96%, white), var(--surface)); box-shadow: 0 1px 2px rgb(var(--shadow-color) / .03), 0 10px 24px rgb(var(--shadow-color) / .055), 0 22px 42px rgb(var(--shadow-color) / .025); }
   .premium-interactive { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
   .premium-interactive:hover:not(:disabled) { transform: translateY(-2px); border-color: var(--border-strong); box-shadow: 0 5px 12px rgb(var(--shadow-color) / .07), 0 16px 32px rgb(var(--shadow-color) / .1); }
   .premium-interactive:active:not(:disabled) { transform: translateY(0) scale(.99); }
   .premium-button { transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
   .premium-button:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 8px 18px rgb(var(--shadow-color) / .15); }
   .premium-button:active:not(:disabled) { transform: translateY(0) scale(.99); }
+  .workflow-main { position: relative; background: radial-gradient(circle at 76% 4%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 32rem); }
+  .workflow-main > div { position: relative; }
+  .employee-context { position: relative; background: color-mix(in srgb, var(--header) 92%, var(--surface)); box-shadow: 0 7px 18px rgb(var(--shadow-color) / .025); }
+  .employee-context__avatar { box-shadow: inset 0 1px 0 rgb(255 255 255 / .6), 0 5px 12px color-mix(in srgb, var(--accent) 14%, transparent); }
+  .employee-context__score { border-color: color-mix(in srgb, var(--border) 80%, var(--accent)); box-shadow: 0 4px 12px rgb(var(--shadow-color) / .05); }
+  .intake-scenario-card { background: linear-gradient(135deg, color-mix(in srgb, var(--surface-raised) 95%, var(--accent-soft)), var(--surface)); }
+  .readiness-score-card { border-color: color-mix(in srgb, var(--accent) 28%, var(--border)); background: linear-gradient(135deg, color-mix(in srgb, var(--accent-soft) 62%, var(--surface)), var(--surface)); }
+  .readiness-stat-card, .summary-card { overflow: hidden; }
+  .readiness-stat-card::before, .summary-card::before { position: absolute; top: 0; left: 1.35rem; width: 2.5rem; height: 2px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 62%, transparent); content: ''; }
+  .readiness-scan-card { border-color: color-mix(in srgb, var(--accent) 21%, var(--border)); }
+  .access-spotlight { position: relative; box-shadow: 0 16px 35px rgb(var(--shadow-color) / .16), inset 0 1px 0 rgb(255 255 255 / .06); }
+  .access-spotlight::after { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(circle at 84% 8%, rgb(104 151 255 / .15), transparent 15rem); content: ''; }
   .accessibility-trigger { position: fixed; right: max(1rem, env(safe-area-inset-right)); bottom: max(1rem, env(safe-area-inset-bottom)); z-index: 50; display: inline-flex; min-height: 3.25rem; min-width: 11.5rem; max-width: calc(100vw - 2rem); align-items: center; justify-content: center; gap: .625rem; overflow: visible; border: 1px solid var(--border-strong); border-radius: 1rem; padding: .625rem .875rem; color: var(--text); background: var(--surface-raised); box-shadow: 0 10px 26px rgb(var(--shadow-color) / .18), 0 2px 6px rgb(var(--shadow-color) / .1); font-size: .875rem; font-weight: 700; line-height: 1.25; letter-spacing: -.01em; transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
   .accessibility-trigger:hover { transform: translateY(-1px); border-color: var(--accent); background: var(--surface-hover); box-shadow: 0 14px 30px rgb(var(--shadow-color) / .2), 0 3px 8px rgb(var(--shadow-color) / .12); }
   .accessibility-trigger:active { transform: translateY(0) scale(.99); }

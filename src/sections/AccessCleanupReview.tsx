@@ -44,7 +44,7 @@ export default function AccessCleanupReview({ onToast }: { onToast: (msg: string
       <SectionTitle eyebrow="Step 4" title={screenTitle} description={screenDesc} />
 
       {/* security message banner */}
-      <div className="mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-900">
+      <div className="access-spotlight mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-900">
         <div className="p-5">
           <div className="flex items-start gap-4">
             <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/10 text-gold-400">

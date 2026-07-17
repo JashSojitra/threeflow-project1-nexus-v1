@@ -91,7 +91,7 @@ export default function ReadinessDashboard() {
 
       {/* top row: score + stats */}
       <div className="mb-6 grid gap-6 lg:grid-cols-3">
-        <Card className="flex items-center gap-6">
+        <Card className="readiness-score-card flex items-center gap-6">
           <ScoreRing score={readinessScore} />
           <div>
             <p className="text-xs font-semibold uppercase tracking-wider text-slate-400">Overall readiness</p>
@@ -109,7 +109,7 @@ export default function ReadinessDashboard() {
 
         <div className="grid grid-cols-2 gap-4 lg:col-span-2">
           {stats.map((s) => (
-            <Card key={s.label} className="flex items-center gap-3">
+            <Card key={s.label} className="readiness-stat-card flex items-center gap-3">
               <span
                 className={`flex h-11 w-11 items-center justify-center rounded-lg ${
                   s.tone === 'rose' ? 'bg-rose-50 text-rose-600' : 'bg-navy-50 text-navy-700'
@@ -128,7 +128,7 @@ export default function ReadinessDashboard() {
 
       {/* AI risk scan + task chart */}
       <div className="mb-6 grid gap-6 lg:grid-cols-5">
-        <Card className="lg:col-span-3">
+        <Card className="readiness-scan-card lg:col-span-3">
           <div className="mb-4 flex items-center gap-4">
             <span className="flex h-10 w-10 items-center justify-center rounded-lg bg-navy-700 text-white">
               <Zap className="h-5 w-5" />

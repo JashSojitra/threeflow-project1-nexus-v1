@@ -73,7 +73,7 @@ export default function ManagerIntake({ onGenerate }: { onGenerate: () => void }
       />
 
       {/* Scenario selector */}
-      <Card className="mb-6" padded={false}>
+      <Card className="mb-6 intake-scenario-card" padded={false}>
         <div className="p-5 sm:p-6">
         <h3 className="mb-3 flex items-center gap-2 text-sm font-semibold text-navy-900">
           <Layers className="h-4 w-4 text-navy-600" />
