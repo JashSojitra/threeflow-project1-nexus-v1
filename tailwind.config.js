@@ -28,8 +28,8 @@ export default {
         },
       },
       boxShadow: {
-        card: '0 1px 2px rgba(15, 23, 42, 0.025), 0 6px 20px rgba(15, 23, 42, 0.035)',
-        cardLg: '0 16px 40px rgba(15, 23, 42, 0.12), 0 2px 8px rgba(15, 23, 42, 0.06)',
+        card: 'var(--shadow-sm)',
+        cardLg: 'var(--shadow-lg)',
       },
       keyframes: {
         'fade-in': {
