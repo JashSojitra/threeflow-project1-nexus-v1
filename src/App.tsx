@@ -10,10 +10,11 @@ import AIStarterBrief from './sections/AIStarterBrief';
 import ResponsibleAI from './sections/ResponsibleAI';
 import WorklogExport from './sections/WorklogExport';
 import AccessibilityPanel from './AccessibilityPanel';
+import WelcomeScreen from './WelcomeScreen';
 import { useLocale } from './locale';
 import { ClipboardList, Rocket, LayoutDashboard, ShieldCheck, FileText, Lock, FileDown, PanelLeftClose, PanelLeft, ShieldCheck as Logo } from 'lucide-react';
 
-type TabId = 'intake' | 'launchpad' | 'dashboard' | 'access' | 'brief' | 'rai' | 'worklog';
+type TabId = 'welcome' | 'intake' | 'launchpad' | 'dashboard' | 'access' | 'brief' | 'rai' | 'worklog';
 const tabs: { id: Exclude<TabId, 'rai'>; key: string; icon: typeof ClipboardList }[] = [
   { id: 'intake', key: 'nav.intake', icon: ClipboardList }, { id: 'launchpad', key: 'nav.launchpad', icon: Rocket },
   { id: 'dashboard', key: 'nav.dashboard', icon: LayoutDashboard }, { id: 'access', key: 'nav.access', icon: ShieldCheck },
@@ -21,11 +22,12 @@ const tabs: { id: Exclude<TabId, 'rai'>; key: string; icon: typeof ClipboardList
 ];
 
 function AppContent() {
-  const [active, setActive] = useState<TabId>('intake'); const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [active, setActive] = useState<TabId>('welcome'); const [sidebarOpen, setSidebarOpen] = useState(true);
   const [toast, setToast] = useState({ msg: '', show: false }); const { form } = useNexus(); const { locale, setLocale, t } = useLocale();
   const showToast = (msg: string) => { setToast({ msg, show: true }); window.setTimeout(() => setToast(current => ({ ...current, show: false })), 2800); };
   const goTo = (tab: TabId, msg?: string) => { setActive(tab); if (msg) showToast(msg); };
   const activeIndex = tabs.findIndex(tab => tab.id === active); const initials = (form.manager || '?').split(' ').map(part => part[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
+  if (active === 'welcome') return <><WelcomeScreen onContinue={() => setActive('intake')} /><AccessibilityPanel /></>;
   return <div className="flex min-h-screen bg-[var(--app)]">
     <aside className={`sticky top-0 hidden h-screen shrink-0 flex-col border-r border-slate-200/70 bg-[var(--sidebar)] transition-[width] duration-200 lg:flex ${sidebarOpen ? 'w-64' : 'w-[72px]'}`}>
       <div className="flex h-16 items-center gap-3 border-b border-slate-200/70 px-4"><span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white"><Logo className="h-5 w-5" aria-hidden="true" /></span>{sidebarOpen && <div className="leading-tight"><p className="text-sm font-semibold tracking-tight text-slate-950">Project Nexus</p><p className="text-[11px] text-slate-500">{t('header.readiness')}</p></div>}</div>
