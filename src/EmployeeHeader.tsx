@@ -29,7 +29,7 @@ export default function EmployeeHeader() {
         </div>
 
         <div className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs">
-          {form.newMinistry && <HeaderItem label={t('employee.destination')} value={form.newMinistry} />}
+          {form.newMinistry && <HeaderItem label={t('employee.destination')} value={[form.newMinistry, form.newTeam].filter(Boolean).join(' / ')} />}
           {form.startDate && <HeaderItem label={t('employee.start')} value={formatLocalizedDate(form.startDate, locale)} />}
           {form.location && <HeaderItem label={t('employee.location')} value={form.location} />}
         </div>

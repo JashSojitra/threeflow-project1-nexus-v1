@@ -192,8 +192,8 @@ html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { b
   .accessibility-option:hover { border-color: var(--border-strong); background: var(--surface-hover); }
   .accessibility-option input { width: 1rem; height: 1rem; margin-top: .15rem; accent-color: var(--accent); }
   .accessibility-text-action { display: inline-flex; align-items: center; gap: .45rem; color: var(--accent); font-size: .875rem; font-weight: 700; text-decoration: underline; text-underline-offset: .16em; }
-  .nexus-welcome { position: relative; display: flex; min-height: 100svh; flex-direction: column; overflow: hidden; color: var(--text); background: radial-gradient(circle at 50% 18%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 27rem), var(--app); }
-  .nexus-welcome::before { position: absolute; inset: 0; pointer-events: none; content: ''; background: radial-gradient(circle at 24% 84%, color-mix(in srgb, var(--accent) 4%, transparent), transparent 25rem); }
+  .nexus-welcome { position: relative; display: flex; min-height: 100svh; flex-direction: column; overflow: hidden; color: var(--text); background: radial-gradient(ellipse at 50% 17%, rgba(88, 112, 224, .14), transparent 34rem), radial-gradient(ellipse at 17% 72%, rgba(121, 167, 255, .08), transparent 30rem), radial-gradient(ellipse at 84% 66%, rgba(151, 126, 221, .07), transparent 29rem), var(--app); }
+  .nexus-welcome::before { position: absolute; inset: 0; pointer-events: none; content: ''; background: radial-gradient(ellipse at 73% 18%, rgba(98, 193, 220, .055), transparent 22rem); }
   .nexus-welcome__header { position: relative; z-index: 1; display: flex; min-height: 5.5rem; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.25rem clamp(1.25rem, 5vw, 4.5rem); }
   .nexus-welcome__mark { display: grid; width: 2.5rem; height: 2.5rem; place-items: center; border: 1px solid var(--border-strong); border-radius: .9rem; color: white; background: var(--accent); box-shadow: var(--shadow-sm); }
   .nexus-welcome__security { display: inline-flex; align-items: center; gap: .4rem; color: var(--text-secondary); font-size: .75rem; font-weight: 650; }
@@ -202,14 +202,17 @@ html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { b
   .nexus-welcome__language button.is-selected { color: white; background: var(--accent); }
   .nexus-welcome__hero { position: relative; z-index: 1; display: flex; width: min(100% - 2rem, 46rem); flex: 1; flex-direction: column; align-items: center; justify-content: center; margin: 0 auto; padding: 3rem 0 5rem; text-align: center; animation: fade-in .32s ease-out; }
   .nexus-welcome__eyebrow { display: inline-flex; align-items: center; gap: .45rem; border: 1px solid var(--border); border-radius: 999px; padding: .4rem .7rem; color: var(--text-secondary); background: color-mix(in srgb, var(--surface) 84%, transparent); font-size: .72rem; font-weight: 700; box-shadow: var(--shadow-xs); }
-  .nexus-welcome h1 { max-width: 40rem; margin: 1.4rem 0 .75rem; color: var(--text); font-size: clamp(2.35rem, 5.6vw, 4.3rem); font-weight: 650; letter-spacing: -.055em; line-height: 1.04; }
+  .nexus-welcome h1 { max-width: 44rem; min-height: 2.1em; margin: 1.4rem 0 .75rem; color: var(--text); font-size: clamp(2.35rem, 5.6vw, 4.3rem); font-weight: 650; letter-spacing: -.055em; line-height: 1.04; }
+  .nexus-welcome__rotator { display: block; min-height: 1.08em; margin-top: .13em; color: var(--text-secondary); font-size: .62em; letter-spacing: -.035em; animation: welcome-phrase-in 300ms ease-out both; }
   .nexus-welcome__hero > p:not(.nexus-welcome__note) { max-width: 39rem; margin: 0; color: var(--text-secondary); font-size: clamp(1rem, 1.8vw, 1.12rem); line-height: 1.65; }
   .nexus-welcome__chooser { display: grid; width: 100%; gap: .75rem; margin-top: 2.4rem; }
-  .nexus-welcome__choice { display: flex; min-height: 5.9rem; align-items: center; gap: 1rem; width: 100%; border: 1px solid var(--border); border-radius: 1.15rem; padding: 1rem 1.1rem; color: var(--text); background: color-mix(in srgb, var(--surface) 91%, transparent); box-shadow: var(--shadow-xs); transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
+  .nexus-welcome__choice { display: flex; min-height: 5.9rem; align-items: center; gap: 1rem; width: 100%; border: 1px solid var(--border); border-radius: 1.15rem; padding: 1rem 1.1rem; color: var(--text); background: color-mix(in srgb, var(--surface) 94%, transparent); box-shadow: var(--shadow-xs); transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease; }
+  .nexus-welcome__choice--newhire { background: color-mix(in srgb, #eaf2ff 32%, var(--surface)); } .nexus-welcome__choice--transfer { background: color-mix(in srgb, #eef0ff 34%, var(--surface)); } .nexus-welcome__choice--cases { background: color-mix(in srgb, #f4efff 34%, var(--surface)); }
   .nexus-welcome__choice:hover { transform: translateY(-2px); border-color: var(--border-strong); background: var(--surface-raised); box-shadow: var(--shadow-md); }
   .nexus-welcome__choice:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
   .nexus-welcome__choice.is-selected { border-color: var(--accent); background: var(--accent-soft); box-shadow: var(--shadow-sm); }
   .nexus-welcome__choice-icon { display: grid; flex: 0 0 auto; width: 2.65rem; height: 2.65rem; place-items: center; border-radius: .85rem; color: var(--accent); background: var(--surface-subtle); }
+  .nexus-welcome__choice--transfer .nexus-welcome__choice-icon { color: #5050b7; background: #edf0ff; } .nexus-welcome__choice--cases .nexus-welcome__choice-icon { color: #7654a8; background: #f4efff; }
   .nexus-welcome__choice.is-selected .nexus-welcome__choice-icon { color: white; background: var(--accent); }
   .nexus-welcome__check { display: grid; width: 1.4rem; height: 1.4rem; margin-left: auto; flex: 0 0 auto; place-items: center; border-radius: 999px; color: white; background: var(--accent); font-size: .75rem; font-weight: 800; }
   .nexus-welcome__continue { display: inline-flex; min-height: 3.1rem; align-items: center; justify-content: center; gap: .65rem; margin-top: 1.35rem; border: 1px solid var(--accent); border-radius: .85rem; padding: .7rem 1.15rem; color: white; background: var(--accent); box-shadow: var(--shadow-sm); font-size: .9rem; font-weight: 750; transition: transform 180ms ease, box-shadow 180ms ease, background-color 180ms ease; }
@@ -217,7 +220,8 @@ html[data-contrast] .bg-slate-950\/35, html[data-contrast] .bg-slate-950\/40 { b
   .nexus-welcome__continue:active { transform: translateY(0); box-shadow: var(--shadow-sm); }
   .nexus-welcome__note { margin: .9rem 0 0; color: var(--text-muted); font-size: .75rem; }
   @media (max-width: 600px) { .nexus-welcome__header { align-items: flex-start; padding: 1rem; } .nexus-welcome__security { display: none; } .nexus-welcome__hero { width: min(100% - 2rem, 46rem); justify-content: flex-start; padding: 3.25rem 0 5.5rem; } .nexus-welcome__choice { min-height: 6.4rem; } }
-  @media (prefers-reduced-motion: reduce) { .nexus-welcome__hero { animation: none; } }
+  @keyframes welcome-phrase-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .nexus-welcome__hero, .nexus-welcome__rotator { animation: none; } }
   @media (max-width: 500px) { .accessibility-panel { width: 100vw; } }
   @media (max-width: 420px) { .accessibility-trigger { left: 1rem; right: 1rem; min-width: 0; width: auto; } .accessibility-trigger__label { text-align: center; } .accessibility-panel { padding: 1.25rem; } }
 }
@@ -228,6 +232,9 @@ html[data-spacing='true'] body { line-height:1.7; letter-spacing:.018em; word-sp
 html[data-underline='true'] a { text-decoration:underline; text-underline-offset:.16em; }
 html[data-focus='true'] :focus-visible { outline:3px solid var(--focus) !important; outline-offset:3px; box-shadow:none; }
 html[data-contrast='high'] .premium-card,html[data-contrast='high'] .scenario-option,html[data-contrast='high'] .accessibility-trigger,html[data-contrast='high'] .accessibility-panel,html[data-contrast='high'] .nexus-welcome__choice { box-shadow:none; border-color:var(--border-strong); }
+html[data-contrast='high'] .nexus-welcome, html[data-contrast='high'] .nexus-welcome::before { background:var(--app); } html[data-contrast='high'] .nexus-welcome__choice { background:var(--surface); }
+html[data-contrast='dark'] .nexus-welcome { background:radial-gradient(ellipse at 50% 14%, rgba(60, 93, 162, .16), transparent 35rem), radial-gradient(ellipse at 82% 70%, rgba(73, 61, 130, .09), transparent 30rem), var(--app); } html[data-contrast='dark'] .nexus-welcome__choice--transfer .nexus-welcome__choice-icon, html[data-contrast='dark'] .nexus-welcome__choice--cases .nexus-welcome__choice-icon { color:var(--accent); background:var(--surface-subtle); }
+html[data-contrast] .access-spotlight { border-color:var(--border); background:var(--surface-subtle); } html[data-contrast] .access-spotlight .text-slate-900 { color:var(--text) !important; } html[data-contrast] .access-spotlight .text-slate-700 { color:var(--text-secondary) !important; }
 @media (prefers-reduced-motion: reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
 
 @layer utilities { .text-balance { text-wrap: balance; } }

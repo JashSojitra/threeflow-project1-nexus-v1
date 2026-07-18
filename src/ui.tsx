@@ -114,7 +114,7 @@ export function ActionButton({
   className?: string;
 }) {
   const variants = {
-    primary: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm',
+    primary: 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-500 hover:to-indigo-600 active:from-blue-700 active:to-indigo-700 shadow-sm',
     secondary: 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 active:bg-slate-100',
     ghost: 'text-slate-600 hover:bg-slate-100 active:bg-slate-200',
     success: 'bg-blue-600 text-white hover:bg-blue-700 active:bg-blue-800 shadow-sm',

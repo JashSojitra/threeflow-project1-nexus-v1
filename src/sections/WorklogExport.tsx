@@ -235,7 +235,7 @@ export default function WorklogExport({ onToast }: { onToast: (msg: string) => v
                     {[
                       { icon: User, label: 'Employee', value: form.name || '—' },
                       { icon: Building2, label: 'Previous', value: form.previousMinistry || '—' },
-                      { icon: Building2, label: 'New ministry', value: form.newMinistry || '—' },
+                      { icon: Building2, label: 'New ministry / team', value: [form.newMinistry, form.newTeam].filter(Boolean).join(' / ') || '—' },
                       { icon: Briefcase, label: 'Role', value: form.newRole || '—' },
                       { icon: CalendarClock, label: 'Start date', value: form.startDate ? formatDate(form.startDate) : '—' },
                       { icon: MapPin, label: 'Location', value: form.location || '—' },

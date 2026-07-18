@@ -23,6 +23,7 @@ export interface FormState {
   transitionType: TransitionType;
   previousMinistry: string;
   newMinistry: string;
+  newTeam: string;
   newRole: string;
   startDate: string;
   location: string;
@@ -89,11 +90,12 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
   transfer: {
     label: 'Ministry Change',
     form: {
-      name: 'Jim Halpert',
+      name: 'Maryam Arif',
       transitionType: 'Ministry Transfer',
-      previousMinistry: 'Ministry of Health',
-      newMinistry: 'TBS',
-      newRole: 'Policy Analyst',
+      previousMinistry: 'MOH',
+      newMinistry: 'MPBSDP',
+      newTeam: 'ITOD',
+      newRole: 'End User IT Analyst',
       startDate: '2026-07-21',
       location: '222 Jarvis St, Toronto',
       manager: 'Michael Scott',
@@ -114,6 +116,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
       transitionType: 'New Hire',
       previousMinistry: 'Not applicable',
       newMinistry: 'MTO',
+      newTeam: '',
       newRole: 'Junior Business Analyst',
       startDate: '2026-08-04',
       location: '315 Front St, Toronto',
@@ -135,6 +138,7 @@ export const scenarios: Record<string, { label: string; form: FormState }> = {
       transitionType: '',
       previousMinistry: '',
       newMinistry: '',
+      newTeam: '',
       newRole: '',
       startDate: '',
       location: '',
@@ -211,7 +215,8 @@ function isNewHire(f: FormState) {
   return f.transitionType === 'New Hire';
 }
 function teamShort(f: FormState) {
-  return f.newMinistry.replace(/^Ministry of /, '');
+  const ministry = f.newMinistry.replace(/^Ministry of /, '');
+  return [ministry, f.newTeam].filter(Boolean).join(' / ');
 }
 
 // ============================================================
@@ -456,7 +461,7 @@ export function generateAccessRows(f: FormState): AccessRow[] {
       kind: 'new',
       recommendation: 'Add',
       approval: 'Manager approval',
-      reason: `Required for ${role} work in ${f.newMinistry}.`,
+      reason: `Required for ${role} work in ${teamShort(f)}.`,
     });
     rows.push({
       id: 'new2',
@@ -470,7 +475,7 @@ export function generateAccessRows(f: FormState): AccessRow[] {
   if (f.teams) {
     rows.push({
       id: 'new3',
-      item: `${role} Teams Channel`,
+      item: `${team} Teams Channel`,
       kind: 'new',
       recommendation: 'Add',
       approval: 'Manager approval',
@@ -659,7 +664,7 @@ export function calculateReadinessScore(tickets: Ticket[]): number {
 export function generateJustification(f: FormState, t?: (key: string, values?: Record<string, string | number>) => string, dateFormatter: (date: string) => string = formatDate): string {
   const name = f.name || 'The employee';
   const role = f.newRole || 'the role';
-  const team = f.newMinistry || 'the new team';
+  const team = teamShort(f) || 'the new team';
   const date = f.startDate ? dateFormatter(f.startDate) : 'the start date';
   const location = f.location || 'the assigned location';
 
@@ -667,7 +672,7 @@ export function generateJustification(f: FormState, t?: (key: string, values?: R
   if (f.sharedDrive) accessItems.push(`${teamShort(f)} SharePoint`);
   if (f.sharedDrive && roleIncludesBriefing(f)) accessItems.push('Briefing Notes Folder');
   else if (f.sharedDrive) accessItems.push('Working Folder');
-  if (f.teams) accessItems.push(`${role} Teams Channel`);
+  if (f.teams) accessItems.push(`${teamShort(f)} Teams Channel`);
   if (f.distributionList) accessItems.push(`${teamShort(f)} Branch Distribution List`);
   if (f.mobile) accessItems.push('Mobile service');
   if (f.admin) accessItems.push('Admin privileges');
@@ -734,7 +739,7 @@ export function generateBriefSections(f: FormState, _locale?: unknown): BriefSec
   const isXfer = isTransfer(f);
   const name = f.name || 'The employee';
   const role = f.newRole || 'the role';
-  const team = f.newMinistry || 'the new team';
+  const team = teamShort(f) || 'the new team';
   const manager = f.manager || 'the manager';
   const location = f.location || 'the assigned location';
 
@@ -887,7 +892,7 @@ function buildAccessItems(f: FormState): { label: string; value: string }[] {
   const items: { label: string; value: string }[] = [];
   if (f.sharedDrive) items.push({ label: 'SharePoint', value: `${teamShort(f)} SharePoint — required for document collaboration.` });
   if (f.sharedDrive) items.push({ label: roleIncludesBriefing(f) ? 'Briefing Notes' : 'Working Folder', value: 'Required for document coordination.' });
-  if (f.teams) items.push({ label: 'Teams', value: `${f.newRole} Teams Channel — required for branch communication.` });
+  if (f.teams) items.push({ label: 'Teams', value: `${teamShort(f)} Teams Channel — required for branch communication.` });
   if (f.distributionList) items.push({ label: 'Distribution list', value: `${teamShort(f)} Branch Distribution List — required for team updates.` });
   if (f.mobile) items.push({ label: 'Mobile', value: 'Mobile number / SIM — required for role.' });
   if (f.admin) items.push({ label: 'Admin', value: 'Admin privileges — requires cyber / security approval.' });

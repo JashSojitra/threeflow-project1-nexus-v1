@@ -1,4 +1,5 @@
 import { useNexus } from '../store';
+import { useLocale } from '../locale';
 import { Card, SectionTitle, ActionButton, ApprovalTag, EmptyState } from '../ui';
 import {
   ShieldAlert,
@@ -15,6 +16,7 @@ import {
 
 export default function AccessCleanupReview({ onToast }: { onToast: (msg: string) => void }) {
   const { form, accessRows, bundleGenerated } = useNexus();
+  const { locale } = useLocale();
   const isTransfer = form.transitionType === 'Ministry Transfer';
   const isNewHire = form.transitionType === 'New Hire';
 
@@ -44,21 +46,16 @@ export default function AccessCleanupReview({ onToast }: { onToast: (msg: string
       <SectionTitle eyebrow="Step 4" title={screenTitle} description={screenDesc} />
 
       {/* security message banner */}
-      <div className="access-spotlight mb-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-900">
+      <div className="access-spotlight mb-6 rounded-2xl border border-blue-200 bg-blue-50/70">
         <div className="p-5">
           <div className="flex items-start gap-4">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-white/10 text-gold-400">
+            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-700">
               <ShieldAlert className="h-5 w-5" />
             </span>
             <div>
-              <p className="font-serif text-base font-semibold leading-snug text-white">
-                Nexus helps prevent access sprawl by flagging old ministry access and recommending only the access
-                required for the new role.
-              </p>
-              <p className="mt-3 border-t border-white/10 pt-3 font-serif text-sm italic leading-relaxed text-navy-200">
-                "Today, onboarding often asks: <span className="text-slate-400">Has access been granted?</span> Nexus
-                asks: <span className="text-gold-400">Has only the correct access been granted, and has old access been removed?</span>"
-              </p>
+              <h2 className="text-sm font-semibold text-slate-900">{locale === 'fr' ? 'Vérification des accès' : 'Access check'}</h2>
+              <p className="mt-2 text-sm leading-6 text-slate-700">{locale === 'fr' ? 'L’intégration traditionnelle demande : l’accès a-t-il été accordé?' : 'Traditional onboarding asks: Has access been granted?'}</p>
+              <p className="mt-1 text-sm font-semibold leading-6 text-slate-900">{locale === 'fr' ? 'Nexus demande : seuls les accès appropriés ont-ils été accordés, et les anciens accès ont-ils été supprimés?' : 'Nexus asks: Has only the correct access been granted, and has old access been removed?'}</p>
             </div>
           </div>
         </div>
