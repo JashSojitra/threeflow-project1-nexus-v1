@@ -200,17 +200,19 @@ export function Toggle({
   );
 }
 
-export function Toast({ message, show }: { message: string; show: boolean }) {
+export function Toast({ message, show, tone = 'success', onDismiss }: { message: string; show: boolean; tone?: 'success' | 'warning' | 'error' | 'info'; onDismiss?: () => void }) {
   return (
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-5 right-5 z-50 flex max-w-sm items-center gap-3 rounded-xl border border-slate-700 bg-slate-900 px-4 py-3 text-sm font-medium text-white shadow-cardLg transition-all duration-200 ${
+      aria-atomic="true"
+      className={`nexus-toast nexus-toast--${tone} ${
         show ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-3 opacity-0'
       }`}
     >
       <span className="flex h-5 w-5 items-center justify-center rounded-full bg-emerald-500 text-xs">✓</span>
-      {message}
+      <span className="nexus-toast__message">{message}</span>
+      {onDismiss && <button type="button" onClick={onDismiss} aria-label="Dismiss notification" className="nexus-toast__dismiss"><X className="h-4 w-4" /></button>}
     </div>
   );
 }
