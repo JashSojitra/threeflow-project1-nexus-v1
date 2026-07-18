@@ -86,9 +86,29 @@ export const locationOptions = [
 // Scenarios
 // ============================================================
 
-export const scenarios: Record<string, { label: string; form: FormState }> = {
+export const maryamDemoHandoverNotes = `Maryam is moving from MOH into the End User IT Analyst role with ITOD at MPBSDP. She will be based at 222 Jarvis St, Toronto.
+
+Main responsibilities will include supporting end users with common hardware, software, account, Microsoft 365, Teams, Outlook, OneDrive, SharePoint, VPN and printer/FMP issues. She may also assist with laptop deployments, device refreshes, onboarding support, ticket updates and documenting troubleshooting steps.
+
+Michael Scott is the manager and should be the first contact for priorities, approvals and escalations. The ITOD team has a morning check-in every Tuesday and Thursday. Maryam should be introduced to the service desk lead, local support contacts at 222 Jarvis and the teams responsible for access requests, assets and cybersecurity approvals.
+
+First-week priorities: confirm laptop and account readiness, verify MPBSDP email and Teams access, complete required security and privacy training, confirm building-card access for 222 Jarvis, test VPN access, test printer/FMP setup and review the ITOD knowledge base.
+
+Important resources include the ITOD support knowledge base, escalation guide, device-deployment checklist, common Microsoft 365 troubleshooting guide, printer/FMP setup instructions and the team contact list.
+
+Open items: confirm removal of unnecessary MOH SharePoint, Teams and distribution-list access; confirm MPBSDP and ITOD SharePoint access; verify ticketing-system access; confirm whether remote-support tools are required; confirm building card; confirm printer profile; confirm final laptop delivery.
+
+Do not automatically request administrative privileges. Any elevated access or remote-support permissions must have a documented business need and the appropriate manager, system-owner or cybersecurity approval.
+
+Questions Maryam should ask Michael: which ticket queues will she support first, who approves escalations, what are the expected response targets, which office days are required, what systems need additional training and who is her assigned onboarding buddy?
+
+Pending information: final ticketing-system permissions, confirmed onboarding buddy, approved remote-support access if needed, final building-access confirmation and completion date for removal of old MOH access.`;
+
+export interface ScenarioData { label: string; form: FormState; handoverNotes?: string; }
+export const scenarios: Record<string, ScenarioData> = {
   transfer: {
     label: 'Ministry Change',
+    handoverNotes: maryamDemoHandoverNotes,
     form: {
       name: 'Maryam Arif',
       transitionType: 'Ministry Transfer',

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNexus } from '../store';
+import { useLocale } from '../locale';
 import { Card, SectionTitle, ActionButton, EmptyState } from '../ui';
 import { formatDate } from '../data';
 import {
@@ -41,7 +42,9 @@ const iconMap: Record<string, typeof FileText> = {
 
 export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => void }) {
   const { form, briefSections, briefGenerated, setBriefGenerated, handoverNotes, setHandoverNotes, bundleGenerated } = useNexus();
+  const { locale } = useLocale();
   const [generating, setGenerating] = useState(false);
+  const isMaryamDemo = form.name === 'Maryam Arif' && form.transitionType === 'Ministry Transfer';
 
   if (!bundleGenerated) {
     return (
@@ -61,8 +64,7 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
     setTimeout(() => {
       setGenerating(false);
       setBriefGenerated(true);
-      setHandoverNotes('');
-      onToast('Starter brief generated. Raw handover notes cleared in prototype simulation.');
+      onToast(locale === 'fr' ? 'Le document d’accueil a été généré à partir des exemples de notes de transfert.' : 'Starter brief generated from the sample handover notes.');
     }, 1800);
   }
 
@@ -87,29 +89,26 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
             <div className="mb-3 flex items-start gap-2.5 rounded-lg border border-emerald-200 bg-emerald-50/50 p-3">
               <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-emerald-600" />
               <p className="text-xs leading-relaxed text-emerald-700">
-                <span className="font-semibold">Temporary AI Processing:</span> Handover notes are used only to
-                generate the starter brief. Raw notes are not retained, not used for model training, and not stored
-                as long-term Nexus records.
+                <span className="font-semibold">Temporary AI Processing:</span> Handover notes are used only to generate the starter brief and are not used for model training. Raw notes remain available while the active case is being prepared; after the manager approves and saves the brief, they can be cleared while the structured brief remains with the case.
               </p>
             </div>
+
+            {isMaryamDemo && <><p className="mb-1 text-xs font-semibold text-slate-700">{locale === 'fr' ? 'Exemple de notes de transfert non structurées' : 'Sample unstructured handover notes'}</p><p className="mb-3 text-xs leading-relaxed text-slate-500">{locale === 'fr' ? 'Dans le prototype, ces exemples de notes représentent les renseignements recueillis auprès de l’ancienne équipe de l’employée et de son nouveau gestionnaire.' : 'For the prototype, these sample notes represent information collected from the employee’s previous team and new manager.'}</p></>}
 
             <textarea
               value={handoverNotes}
               onChange={(e) => setHandoverNotes(e.target.value)}
-              disabled={generating || briefGenerated}
-              rows={12}
+              disabled={generating}
+              rows={18}
               placeholder="Paste handover notes here…"
-              className="w-full resize-none rounded-xl border border-slate-300 bg-white p-4 text-sm leading-relaxed text-slate-900 outline-none transition-colors duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-50 disabled:opacity-60"
+              className="min-h-[22rem] w-full resize-y rounded-xl border border-slate-300 bg-white p-4 text-sm leading-relaxed text-slate-900 outline-none transition-colors duration-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-slate-50 disabled:opacity-60"
             />
 
-            <div className="mt-3 flex items-center justify-between">
+            <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <span className="text-xs text-slate-400">
-                {briefGenerated ? 'Notes cleared after generation' : `${handoverNotes.length} characters`}
+                {`${handoverNotes.length} characters`}
               </span>
-              <ActionButton onClick={generate} loading={generating} disabled={briefGenerated || !handoverNotes.trim()}>
-                <Sparkles className="h-4 w-4" />
-                Generate Starter Brief
-              </ActionButton>
+              <div className="flex flex-wrap gap-2"><button type="button" onClick={() => setHandoverNotes('')} disabled={!handoverNotes || generating} className="rounded-xl border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 disabled:cursor-not-allowed disabled:opacity-60">{locale === 'fr' ? 'Effacer les notes brutes' : 'Clear Raw Notes'}</button><ActionButton onClick={generate} loading={generating} disabled={!handoverNotes.trim()}><Sparkles className="h-4 w-4" />{locale === 'fr' ? (briefGenerated ? 'Regénérer le document d’accueil' : 'Générer le document d’accueil') : (briefGenerated ? 'Regenerate Starter Brief' : 'Generate Starter Brief')}</ActionButton></div>
             </div>
           </Card>
         </div>
@@ -146,7 +145,7 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
             <div className="animate-fade-in space-y-4">
               <div className="flex items-center gap-2 rounded-lg bg-emerald-50 px-4 py-2.5 text-sm font-medium text-emerald-700">
                 <CheckCircle2 className="h-4 w-4" />
-                Starter brief generated. Raw handover notes cleared in prototype simulation.
+                Starter brief generated from the sample handover notes.
               </div>
 
               <Card padded={false} className="overflow-hidden">
@@ -160,7 +159,7 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
                         Starter Brief — {form.name || 'Employee'}
                       </h3>
                       <p className="text-sm text-slate-500">
-                        {form.newRole || 'Role'} · {form.newMinistry || 'Team'}
+                        {form.newRole || 'Role'} · {[form.newMinistry, form.newTeam].filter(Boolean).join(' / ') || 'Team'}
                       </p>
                     </div>
                   </div>
@@ -177,7 +176,7 @@ export default function AIStarterBrief({ onToast }: { onToast: (msg: string) => 
                 <div className="grid grid-cols-2 gap-px bg-slate-100 sm:grid-cols-4">
                   {[
                     { icon: User, label: 'Employee', value: form.name || '—' },
-                    { icon: Building2, label: 'Team', value: form.newMinistry || '—' },
+                    { icon: Building2, label: 'Team', value: [form.newMinistry, form.newTeam].filter(Boolean).join(' / ') || '—' },
                     { icon: Briefcase, label: 'Role', value: form.newRole || '—' },
                     { icon: CalendarClock, label: 'Start', value: form.startDate ? formatDate(form.startDate) : '—' },
                   ].map((m) => (
